@@ -276,25 +276,29 @@
      VORDERSEITE
      ========================================================== */
 
-  .front-face{
+.front-face{
     position:absolute;
 
-    left:0;
-    top:0;
+    /*
+     * Der schwarze Bereich wird 2 mm größer:
+     * 1 mm nach links
+     * 1 mm nach rechts
+     * 1 mm nach oben
+     * 1 mm nach unten
+     */
+    left:-1mm;
+    top:-1mm;
 
-    width:65mm;
-    height:65mm;
+    width:67mm;
+    height:67mm;
 
     background-color:#101014;
 
-    /*
-     * Die Ringe bleiben exakt 65 x 65 mm.
-     */
     background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Ccircle cx='100' cy='100' r='94' fill='none' stroke='%232b8cff' stroke-width='2.2' stroke-linecap='round' stroke-dasharray='95 35 55 25' transform='rotate(10 100 100)'/%3E%3Ccircle cx='100' cy='100' r='83' fill='none' stroke='%23ff3d81' stroke-width='2.2' stroke-linecap='round' stroke-dasharray='80 32 44 20' transform='rotate(140 100 100)'/%3E%3Ccircle cx='100' cy='100' r='72' fill='none' stroke='%23ffd23d' stroke-width='2.2' stroke-linecap='round' stroke-dasharray='68 28 38 18' transform='rotate(250 100 100)'/%3E%3Ccircle cx='100' cy='100' r='61' fill='none' stroke='%2300c2a8' stroke-width='2.2' stroke-linecap='round' stroke-dasharray='58 24 32 16' transform='rotate(320 100 100)'/%3E%3Ccircle cx='100' cy='100' r='50' fill='none' stroke='%23ff8a3d' stroke-width='2.2' stroke-linecap='round' stroke-dasharray='48 20 28 14' transform='rotate(60 100 100)'/%3E%3Ccircle cx='100' cy='100' r='39' fill='none' stroke='%239b59f6' stroke-width='2.2' stroke-linecap='round' stroke-dasharray='38 16 22 11' transform='rotate(200 100 100)'/%3E%3Ccircle cx='100' cy='100' r='28' fill='none' stroke='%23ff5252' stroke-width='2.2' stroke-linecap='round' stroke-dasharray='28 12 16 8' transform='rotate(100 100 100)'/%3E%3C/svg%3E");
 
     background-size:65mm 65mm;
-    background-position:center;
     background-repeat:no-repeat;
+    background-position:center;
 
     display:flex;
 
@@ -303,19 +307,10 @@
 
     overflow:visible;
 
-    /*
-     * Damit der schwarze Bereich und die Farben
-     * beim Drucken erhalten bleiben.
-     */
     -webkit-print-color-adjust:exact;
     print-color-adjust:exact;
     color-adjust:exact;
-
-    /*
-     * Wichtig für das Pseudo-Element.
-     */
-    z-index:0;
-  }
+}
 
   /*
    * ==========================================================
