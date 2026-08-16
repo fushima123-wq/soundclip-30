@@ -1321,6 +1321,9 @@ function getBackCardPosition(index){
 
   /*
    * X bleibt exakt gleich.
+   *
+   * Die Rückseite wird nur auf der Y-Achse
+   * anhand der kompletten A4-Seite gespiegelt.
    */
 
   const left =
@@ -1332,19 +1335,24 @@ function getBackCardPosition(index){
     );
 
   /*
-   * Die Reihenfolge wird gespiegelt,
-   * aber der äußere Rand bleibt exakt
-   * gleich wie auf der Vorderseite.
+   * Echte Spiegelung an der horizontalen
+   * Mitte des A4-Blattes.
+   *
+   * Vorderseite:
+   *   oberer Rand = PRINT.top
+   *
+   * Rückseite:
+   *   unterer Rand = PRINT.top
+   *
+   * Dadurch bleibt die Karte beim Wenden
+   * exakt hinter ihrer Vorderseite.
    */
 
-  const mirroredRow =
-    PRINT.rows -
-    1 -
-    row;
-
   const top =
-    PRINT.top +
-    mirroredRow *
+    PRINT.pageHeight -
+    PRINT.top -
+    PRINT.cardHeight -
+    row *
     (
       PRINT.cardHeight +
       PRINT.gapY
@@ -1356,7 +1364,6 @@ function getBackCardPosition(index){
   };
 
 }
-
 
 /* ============================================================
    KARTE POSITIONIEREN
