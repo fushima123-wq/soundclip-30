@@ -489,6 +489,16 @@ table.list .del{
     background:#fff;
   }
 
+  /* WICHTIG: .wrap hat auf dem Bildschirm eigenes Padding/max-width
+     für die Formular-Ansicht - das muss beim Drucken auf 0/none,
+     sonst schiebt es die 210mm breite Druckseite nach rechts raus
+     und der rechte Rand wird schmaler als der linke. */
+  .wrap{
+    max-width:none;
+    margin:0;
+    padding:0;
+  }
+
   header,
   .wrap > *:not(#printArea){
     display:none !important;
