@@ -250,8 +250,8 @@ table.list .del{
 .cell{
   position:absolute;
 
-  width:69mm;
-  height:69mm;
+  width:65mm;
+  height:65mm;
 
   margin:0;
   padding:0;
@@ -277,8 +277,8 @@ table.list .del{
   left:0;
   top:0;
 
-  width:69mm;
-  height:69mm;
+  width:65mm;
+  height:65mm;
 
   background-color:#101014;
 
@@ -313,11 +313,11 @@ table.list .del{
 
   position:absolute;
 
-  left:-1mm;
-  top:-1mm;
+  left:-1.5mm;
+  top:-1.5mm;
 
-  width:71mm;
-  height:71mm;
+  width:68mm;
+  height:68mm;
 
   background:#101014;
 
@@ -397,8 +397,8 @@ table.list .del{
   left:0;
   top:0;
 
-  width:69mm;
-  height:69mm;
+  width:65mm;
+  height:65mm;
 
   display:flex;
 
@@ -534,8 +534,8 @@ table.list .del{
   .cell{
     position:absolute;
 
-    width:69mm;
-    height:69mm;
+    width:65mm;
+    height:65mm;
 
     overflow:visible;
   }
@@ -771,19 +771,21 @@ const PRINT = {
   pageWidth:210,
   pageHeight:297,
 
-  /* Kartengröße */
+  /* Kartengröße (finale Schnittgröße) */
 
-  cardWidth:69,
-  cardHeight:69,
+  cardWidth:65,
+  cardHeight:65,
 
-  /* Abstand zwischen den Karten */
+  /* Abstand zwischen den Karten - bewusst größer als der
+     1,5mm-Überstand der Vorderseite (68mm-Box), damit sich
+     benachbarte schwarze Kästen nicht berühren */
 
-  gapX:0.5,
-  gapY:0.5,
+  gapX:4,
+  gapY:4,
 
   /* Abstand oben */
 
-  top:8,
+  top:12.5,
 
   columns:3,
   rows:4
@@ -792,18 +794,11 @@ const PRINT = {
 
 
 /*
- * WICHTIG:
- *
- * Die Position wird bewusst fest auf 1 mm gesetzt.
- *
- * Damit liegen bei 69-mm-Karten und 0,5-mm-Abstand:
- *
- * 1 mm | 69 | 0,5 | 69 | 0,5 | 69 | 1 mm
- *
- * exakt auf A4.
+ * Horizontal zentriert bei 3 Spalten x 65mm + 2 x 4mm Abstand:
+ * (210 - (3*65 + 2*4)) / 2 = 3,5mm links und rechts
  */
 
-PRINT.left = 1;
+PRINT.left = 3.5;
 
 
 /* ============================================================
