@@ -502,72 +502,103 @@ async function renderPrint(){
 
   const PER_SHEET = 12; // 3 cols x 4 rows
   const COLS = 3;
+  const ROWS = 4;
   const sheets = Math.ceil(cards.length / PER_SHEET);
   const qrPromises = [];
 
   for(let s=0; s<sheets; s++){
     const sheetCards = cards.slice(s*PER_SHEET, s*PER_SHEET + PER_SHEET);
 
-    // FRONT sheet
+    // ---------- FRONT sheet (unverändert) ----------
     const frontSheet = document.createElement('div');
     frontSheet.className = 'sheet';
-    sheetCards.forEach((c, idx)=>{
-      const globalIndex = s*PER_SHEET + idx + 1;
+
+    for(let i=0; i<PER_SHEET; i++){
+      const c = sheetCards[i];
+      if(!c){
+        // leere Zelle, falls letzte Seite nicht voll
+        const cell = document.createElement('div');
+        cell.className = 'cell empty-cell';
+        frontSheet.appendChild(cell);
+        continue;
+      }
+
+      const globalIndex = s*PER_SHEET + i + 1;
       const cell = document.createElement('div');
       cell.className = 'cell';
+
       const face = document.createElement('div');
       face.className = 'front-face';
+
       const num = document.createElement('div');
       num.className = 'num';
       num.style.background = c.color;
       num.textContent = globalIndex;
+
       const qrBox = document.createElement('div');
       qrBox.className = 'qr';
       const canvas = document.createElement('canvas');
       qrBox.appendChild(canvas);
+
       face.appendChild(qrBox);
       face.appendChild(num);
       cell.appendChild(face);
       frontSheet.appendChild(cell);
+
       qrPromises.push(QRCode.toCanvas(canvas, c.link, { margin: 1, width: 400, errorCorrectionLevel: 'M' }));
-    });
+    }
+
     area.appendChild(frontSheet);
 
-    // BACK sheet - Zeilenreihenfolge umgedreht (für "kurze Seite kippen" beim Duplexdruck),
-    // Spalten (links/rechts) bleiben dabei unverändert wie auf der Vorderseite.
+    // ---------- BACK sheet (korrekt gespiegelt) ----------
     const backSheet = document.createElement('div');
     backSheet.className = 'sheet back-sheet';
-    const rows = Math.ceil(sheetCards.length / COLS);
-    for(let r=rows-1; r>=0; r--){
-      const rowCards = sheetCards.slice(r*COLS, r*COLS+COLS);
-      while(rowCards.length < COLS) rowCards.push(null);
-      rowCards.forEach((c, idxInRow)=>{
+
+    // Zeilen von unten nach oben
+    for(let r=ROWS-1; r>=0; r--){
+      // Hole die 3 Karten dieser Zeile (oder weniger am Ende)
+      const rowStart = r * COLS;
+      const rowCards = [];
+      for(let c=0; c<COLS; c++){
+        const idx = rowStart + c;
+        rowCards.push(idx < sheetCards.length ? { card: sheetCards[idx], idx } : null);
+      }
+
+      // Spalten spiegeln (links ↔ rechts) für „kurze Seite kippen“
+      rowCards.reverse();
+
+      // Zellen in dieser (gespiegelten) Zeile erzeugen
+      for(let c=0; c<COLS; c++){
+        const item = rowCards[c];
         const cell = document.createElement('div');
-        if(c===null){
+
+        if(!item){
           cell.className = 'cell empty-cell';
         } else {
-          const originalIdx = sheetCards.indexOf(c);
-          const globalIndex = s*PER_SHEET + originalIdx + 1;
+          const { card, idx } = item;
+          const globalIndex = s*PER_SHEET + idx + 1;
+
           cell.className = 'cell';
           const face = document.createElement('div');
           face.className = 'back-face';
-          face.style.background = lightenColor(c.color, 0.6);
+          face.style.background = lightenColor(card.color, 0.6);
           face.innerHTML = `
-            <div class="artist">${c.artist}</div>
-            <div class="year">${c.year}</div>
-            <div class="title">${c.title}</div>
+            <div class="artist">${card.artist}</div>
+            <div class="year">${card.year}</div>
+            <div class="title">${card.title}</div>
             <div class="idx">#${globalIndex}</div>`;
           cell.appendChild(face);
         }
+
         backSheet.appendChild(cell);
-      });
+      }
     }
+
     area.appendChild(backSheet);
   }
 
   await Promise.all(qrPromises);
 }
-
 function printCards(){
   if(cards.length === 0){
     alert('Bitte zuerst mindestens eine Karte hinzufügen.');
