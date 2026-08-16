@@ -174,7 +174,7 @@
   #printArea{display:none;}
   .sheet{
     width:210mm;
-    min-height:297mm;
+    height:294mm;
     margin:0 auto 14px;
     background:#fff;
     display:grid;
@@ -184,6 +184,10 @@
     align-content:start;
     gap:3mm;
     padding:8mm 0;
+    overflow:hidden;
+  }
+  .sheet.back-sheet{
+    padding-top:4mm;
   }
   .cell{
     width:65mm;
@@ -532,7 +536,7 @@ async function renderPrint(){
     // BACK sheet - Zeilenreihenfolge umgedreht (für "kurze Seite kippen" beim Duplexdruck),
     // Spalten (links/rechts) bleiben dabei unverändert wie auf der Vorderseite.
     const backSheet = document.createElement('div');
-    backSheet.className = 'sheet';
+    backSheet.className = 'sheet back-sheet';
     const rows = Math.ceil(sheetCards.length / COLS);
     for(let r=rows-1; r>=0; r--){
       const rowCards = sheetCards.slice(r*COLS, r*COLS+COLS);
