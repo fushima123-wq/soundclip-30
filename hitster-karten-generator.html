@@ -1253,13 +1253,14 @@ function getCardPosition(index){
       PRINT.gapX
     );
 
-  const top =
-    PRINT.top +
-    row *
-    (
-      PRINT.cardHeight +
-      PRINT.gapY
-    );
+const top =
+  PRINT.top +
+  mirroredRow *
+  (
+    PRINT.cardHeight +
+    PRINT.gapY
+  ) -
+  8;
 
   return {
     left:left,
