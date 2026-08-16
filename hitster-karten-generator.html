@@ -282,11 +282,15 @@
     font-family:Arial, sans-serif;
   }
 
+  @page{
+    size: A4;
+    margin: 0;
+  }
   @media print{
     header, .wrap > *:not(#printArea){display:none !important;}
     #printArea{display:block;}
     .sheet{page-break-after:always; margin:0;}
-    body{background:#fff;}
+    body{background:#fff; margin:0;}
   }
 </style>
 </head>
