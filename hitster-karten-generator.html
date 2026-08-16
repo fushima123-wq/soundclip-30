@@ -1255,7 +1255,7 @@ function getCardPosition(index){
 
 const top =
   PRINT.top +
-  mirroredRow *
+
   (
     PRINT.cardHeight +
     PRINT.gapY
@@ -1309,65 +1309,6 @@ const top =
  * ============================================================
  */
 
-function getBackCardPosition(index){
-
-  const row =
-    Math.floor(
-      index / PRINT.columns
-    );
-
-  const col =
-    index % PRINT.columns;
-
-  /*
-   * Rückseite für:
-   * "AN KURZER SEITE WENDEN"
-   *
-   * Die Reihenfolge wird oben/unten gespiegelt.
-   */
-
-  const mirroredRow =
-    PRINT.rows -
-    1 -
-    row;
-
-  /*
-   * X bleibt exakt gleich,
-   * weil links/rechts bereits passt.
-   */
-
-  const left =
-    PRINT.left +
-    col *
-    (
-      PRINT.cardWidth +
-      PRINT.gapX
-    );
-
-  /*
-   * Y-Position:
-   *
-   * - normale Spiegelung
-   * - anschließend 8 mm nach oben
-   *
-   * Nur die Rückseite wird verschoben.
-   */
-
-  const top =
-    PRINT.top +
-    mirroredRow *
-    (
-      PRINT.cardHeight +
-      PRINT.gapY
-    ) -
-    8;
-
-  return {
-    left:left,
-    top:top
-  };
-
-}
 
 /* ============================================================
    KARTE POSITIONIEREN
