@@ -250,8 +250,8 @@ table.list .del{
 .cell{
   position:absolute;
 
-  width:67mm;
-  height:67mm;
+  width:69mm;
+  height:69mm;
 
   margin:0;
   padding:0;
@@ -277,14 +277,14 @@ table.list .del{
   left:0;
   top:0;
 
-  width:67mm;
-  height:67mm;
+  width:69mm;
+  height:69mm;
 
   background-color:#101014;
 
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Ccircle cx='100' cy='100' r='94' fill='none' stroke='%232b8cff' stroke-width='2.2' stroke-linecap='round' stroke-dasharray='95 35 55 25' transform='rotate(10 100 100)'/%3E%3Ccircle cx='100' cy='100' r='83' fill='none' stroke='%23ff3d81' stroke-width='2.2' stroke-linecap='round' stroke-dasharray='80 32 44 20' transform='rotate(140 100 100)'/%3E%3Ccircle cx='100' cy='100' r='72' fill='none' stroke='%23ffd23d' stroke-width='2.2' stroke-linecap='round' stroke-dasharray='68 28 38 18' transform='rotate(250 100 100)'/%3E%3Ccircle cx='100' cy='100' r='61' fill='none' stroke='%2300c2a8' stroke-width='2.2' stroke-linecap='round' stroke-dasharray='58 24 32 16' transform='rotate(320 100 100)'/%3E%3Ccircle cx='100' cy='100' r='50' fill='none' stroke='%23ff8a3d' stroke-width='2.2' stroke-linecap='round' stroke-dasharray='48 20 28 14' transform='rotate(60 100 100)'/%3E%3Ccircle cx='100' cy='100' r='39' fill='none' stroke='%239b59f6' stroke-width='2.2' stroke-linecap='round' stroke-dasharray='38 16 22 11' transform='rotate(200 100 100)'/%3E%3Ccircle cx='100' cy='100' r='28' fill='none' stroke='%23ff5252' stroke-width='2.2' stroke-linecap='round' stroke-dasharray='28 12 16 8' transform='rotate(100 100 100)'/%3E%3C/svg%3E");
 
-  background-size:67mm 67mm;
+  background-size:cover;
   background-position:center;
   background-repeat:no-repeat;
 
@@ -300,20 +300,22 @@ table.list .del{
   color-adjust:exact;
 }
 
-/* ==========================================================
-   SCHWARZER ÜBERSTAND
-   ========================================================== */
+/*
+ * Schwarzer Bereich wird etwas größer gemacht,
+ * damit beim Ausschneiden kleine Ungenauigkeiten
+ * nicht auffallen.
+ */
 
 .front-face::before{
   content:"";
 
   position:absolute;
 
-  left:-1mm;
-  top:-1mm;
+  left:-1.5mm;
+  top:-1.5mm;
 
-  width:69mm;
-  height:69mm;
+  width:72mm;
+  height:72mm;
 
   background:#101014;
 
@@ -393,8 +395,8 @@ table.list .del{
   left:0;
   top:0;
 
-  width:67mm;
-  height:67mm;
+  width:69mm;
+  height:69mm;
 
   display:flex;
 
@@ -520,8 +522,8 @@ table.list .del{
   .cell{
     position:absolute;
 
-    width:67mm;
-    height:67mm;
+    width:69mm;
+    height:69mm;
 
     overflow:visible;
   }
@@ -747,6 +749,7 @@ let cards = [];
 let selectedColor =
 COLORS[0];
 
+
 /* ============================================================
    DRUCKMAẞE
    ============================================================ */
@@ -757,22 +760,22 @@ const PRINT = {
   pageHeight:297,
 
   /*
-   * NEU:
-   * Karten sind jetzt 67 × 67 mm.
+   * NEUE KARTENGRÖSSE
    */
 
-  cardWidth:67,
-  cardHeight:67,
+  cardWidth:69,
+  cardHeight:69,
 
   /*
-   * Abstand zwischen Karten
+   * Sehr kleiner Abstand zwischen
+   * den Karten.
    */
 
-  gapX:3,
-  gapY:3,
+  gapX:0.5,
+  gapY:0.5,
 
   /*
-   * Oberer Rand bleibt 8 mm.
+   * Oberer Rand.
    */
 
   top:8,
@@ -782,15 +785,20 @@ const PRINT = {
 
 };
 
+
 /*
- * Die 3 Karten werden automatisch
- * exakt auf der A4-Seite zentriert.
+ * Gesamtbreite:
  *
- * 67 + 3 + 67 + 3 + 67 = 207 mm
+ * 69 + 0.5 + 69 + 0.5 + 69
  *
- * 210 - 207 = 3 mm
+ * = 208 mm
  *
- * links/rechts = 1,5 mm
+ * A4 = 210 mm
+ *
+ * verbleiben 2 mm
+ *
+ * links = 1 mm
+ * rechts = 1 mm
  */
 
 PRINT.left =
@@ -1314,9 +1322,7 @@ PRINT.columns;
 
 
 /*
- * Deine bisher funktionierende Feinjustierung.
- *
- * Bitte zunächst bei 0 lassen.
+ * Deine Feinjustierung bleibt erhalten.
  */
 
 const BACK_OFFSET_X = 0;
@@ -1446,10 +1452,6 @@ document.createElement(
 );
 
 
-/*
- * Exakte Vorderseitenposition
- */
-
 const pos =
 getCardPosition(i);
 
@@ -1459,10 +1461,6 @@ pos.left,
 pos.top
 );
 
-
-/*
- * Leerer Platz
- */
 
 if(!c){
 
@@ -1502,7 +1500,7 @@ face.className =
 
 
 /* ========================================================
-   KARTENNUMMER
+   ZAHL
    ======================================================== */
 
 const num =
@@ -1563,10 +1561,8 @@ cell
 
 
 /*
- * QR-Code erzeugen
- *
- * WEISSER QR-CODE
- * AUF SCHWARZEM HINTERGRUND
+ * QR-Code:
+ * weiß auf schwarz
  */
 
 qrPromises.push(
@@ -1640,10 +1636,6 @@ pos.left,
 pos.top
 );
 
-
-/*
- * Leerer Platz
- */
 
 if(!c){
 
@@ -1730,7 +1722,7 @@ backSheet
 
 
 /*
- * Warten bis alle QR-Codes fertig sind.
+ * QR-Codes fertig laden
  */
 
 await Promise.all(
