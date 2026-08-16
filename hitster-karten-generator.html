@@ -238,7 +238,7 @@ table.list .del{
 
   background:#fff;
 
-  overflow:hidden;
+  overflow:visible;
 
   display:block;
 }
@@ -250,18 +250,14 @@ table.list .del{
 .cell{
   position:absolute;
 
-  width:65mm;
-  height:65mm;
+  width:67mm;
+  height:67mm;
 
   margin:0;
   padding:0;
 
   border:0.3mm dashed #bbb;
 
-  /*
-   * WICHTIG:
-   * Der schwarze Überstand darf sichtbar sein.
-   */
   overflow:visible;
 
   box-sizing:border-box;
@@ -272,17 +268,8 @@ table.list .del{
 }
 
 /* ==========================================================
-   SCHWARZER ÜBERSTAND
+   VORDERSEITE
    ========================================================== */
-
-/*
- * Dieser Bereich ist 67 × 67 mm.
- *
- * Die eigentliche Karte bleibt 65 × 65 mm.
- *
- * Der schwarze Bereich ragt jeweils
- * 1 mm über die Karte hinaus.
- */
 
 .front-face{
   position:absolute;
@@ -290,10 +277,16 @@ table.list .del{
   left:0;
   top:0;
 
-  width:65mm;
-  height:65mm;
+  width:67mm;
+  height:67mm;
 
   background-color:#101014;
+
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Ccircle cx='100' cy='100' r='94' fill='none' stroke='%232b8cff' stroke-width='2.2' stroke-linecap='round' stroke-dasharray='95 35 55 25' transform='rotate(10 100 100)'/%3E%3Ccircle cx='100' cy='100' r='83' fill='none' stroke='%23ff3d81' stroke-width='2.2' stroke-linecap='round' stroke-dasharray='80 32 44 20' transform='rotate(140 100 100)'/%3E%3Ccircle cx='100' cy='100' r='72' fill='none' stroke='%23ffd23d' stroke-width='2.2' stroke-linecap='round' stroke-dasharray='68 28 38 18' transform='rotate(250 100 100)'/%3E%3Ccircle cx='100' cy='100' r='61' fill='none' stroke='%2300c2a8' stroke-width='2.2' stroke-linecap='round' stroke-dasharray='58 24 32 16' transform='rotate(320 100 100)'/%3E%3Ccircle cx='100' cy='100' r='50' fill='none' stroke='%23ff8a3d' stroke-width='2.2' stroke-linecap='round' stroke-dasharray='48 20 28 14' transform='rotate(60 100 100)'/%3E%3Ccircle cx='100' cy='100' r='39' fill='none' stroke='%239b59f6' stroke-width='2.2' stroke-linecap='round' stroke-dasharray='38 16 22 11' transform='rotate(200 100 100)'/%3E%3Ccircle cx='100' cy='100' r='28' fill='none' stroke='%23ff5252' stroke-width='2.2' stroke-linecap='round' stroke-dasharray='28 12 16 8' transform='rotate(100 100 100)'/%3E%3C/svg%3E");
+
+  background-size:67mm 67mm;
+  background-position:center;
+  background-repeat:no-repeat;
 
   display:flex;
 
@@ -307,9 +300,9 @@ table.list .del{
   color-adjust:exact;
 }
 
-/*
- * Schwarzer Bereich hinter der eigentlichen Grafik.
- */
+/* ==========================================================
+   SCHWARZER ÜBERSTAND
+   ========================================================== */
 
 .front-face::before{
   content:"";
@@ -319,8 +312,8 @@ table.list .del{
   left:-1mm;
   top:-1mm;
 
-  width:67mm;
-  height:67mm;
+  width:69mm;
+  height:69mm;
 
   background:#101014;
 
@@ -329,38 +322,6 @@ table.list .del{
   -webkit-print-color-adjust:exact;
   print-color-adjust:exact;
   color-adjust:exact;
-}
-
-/* ==========================================================
-   RINGE
-   ========================================================== */
-
-/*
- * Die Ringe bleiben exakt 65 × 65 mm.
- *
- * Dadurch werden sie NICHT vergrößert.
- */
-
-.front-face::after{
-  content:"";
-
-  position:absolute;
-
-  left:0;
-  top:0;
-
-  width:65mm;
-  height:65mm;
-
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Ccircle cx='100' cy='100' r='94' fill='none' stroke='%232b8cff' stroke-width='2.2' stroke-linecap='round' stroke-dasharray='95 35 55 25' transform='rotate(10 100 100)'/%3E%3Ccircle cx='100' cy='100' r='83' fill='none' stroke='%23ff3d81' stroke-width='2.2' stroke-linecap='round' stroke-dasharray='80 32 44 20' transform='rotate(140 100 100)'/%3E%3Ccircle cx='100' cy='100' r='72' fill='none' stroke='%23ffd23d' stroke-width='2.2' stroke-linecap='round' stroke-dasharray='68 28 38 18' transform='rotate(250 100 100)'/%3E%3Ccircle cx='100' cy='100' r='61' fill='none' stroke='%2300c2a8' stroke-width='2.2' stroke-linecap='round' stroke-dasharray='58 24 32 16' transform='rotate(320 100 100)'/%3E%3Ccircle cx='100' cy='100' r='50' fill='none' stroke='%23ff8a3d' stroke-width='2.2' stroke-linecap='round' stroke-dasharray='48 20 28 14' transform='rotate(60 100 100)'/%3E%3Ccircle cx='100' cy='100' r='39' fill='none' stroke='%239b59f6' stroke-width='2.2' stroke-linecap='round' stroke-dasharray='38 16 22 11' transform='rotate(200 100 100)'/%3E%3Ccircle cx='100' cy='100' r='28' fill='none' stroke='%23ff5252' stroke-width='2.2' stroke-linecap='round' stroke-dasharray='28 12 16 8' transform='rotate(100 100 100)'/%3E%3C/svg%3E");
-
-  background-size:65mm 65mm;
-  background-position:center;
-  background-repeat:no-repeat;
-
-  pointer-events:none;
-
-  z-index:1;
 }
 
 /* ==========================================================
@@ -432,8 +393,8 @@ table.list .del{
   left:0;
   top:0;
 
-  width:65mm;
-  height:65mm;
+  width:67mm;
+  height:67mm;
 
   display:flex;
 
@@ -559,8 +520,8 @@ table.list .del{
   .cell{
     position:absolute;
 
-    width:65mm;
-    height:65mm;
+    width:67mm;
+    height:67mm;
 
     overflow:visible;
   }
@@ -573,17 +534,21 @@ table.list .del{
 
 <header>
 
-  <h1>LiedScanner Kartengenerator</h1>
+<h1>LiedScanner Kartengenerator</h1>
 
-  <p>
-    Eigene Songs eintragen &rarr;
-    echten QR-Code erzeugen &rarr;
-    als Karten ausdrucken
-  </p>
+<p>
+Eigene Songs eintragen &rarr;
+echten QR-Code erzeugen &rarr;
+als Karten ausdrucken
+</p>
 
 </header>
 
 <div class="wrap">
+
+<!-- ========================================================
+     FORMULAR
+     ======================================================== -->
 
 <div class="card-form">
 
@@ -596,9 +561,9 @@ table.list .del{
 <label>Jahr</label>
 
 <input
-  type="text"
-  id="f-year"
-  placeholder="1987"
+type="text"
+id="f-year"
+placeholder="1987"
 >
 
 </div>
@@ -608,9 +573,9 @@ table.list .del{
 <label>Interpret</label>
 
 <input
-  type="text"
-  id="f-artist"
-  placeholder="Depeche Mode"
+type="text"
+id="f-artist"
+placeholder="Depeche Mode"
 >
 
 </div>
@@ -620,8 +585,8 @@ table.list .del{
 <label>Kategorie-Farbe</label>
 
 <div
-  class="swatches"
-  id="swatches"
+class="swatches"
+id="swatches"
 ></div>
 
 </div>
@@ -631,9 +596,9 @@ table.list .del{
 <label>Songtitel</label>
 
 <input
-  type="text"
-  id="f-title"
-  placeholder="Never Let Me Down Again"
+type="text"
+id="f-title"
+placeholder="Never Let Me Down Again"
 >
 
 </div>
@@ -641,8 +606,8 @@ table.list .del{
 </div>
 
 <div
-  class="grid-form"
-  style="grid-template-columns:1fr;margin-top:12px;"
+class="grid-form"
+style="grid-template-columns:1fr;margin-top:12px;"
 >
 
 <div>
@@ -650,9 +615,9 @@ table.list .del{
 <label>YouTube-Link zum Song</label>
 
 <input
-  type="text"
-  id="f-link"
-  placeholder="https://www.youtube.com/watch?v=..."
+type="text"
+id="f-link"
+placeholder="https://www.youtube.com/watch?v=..."
 >
 
 </div>
@@ -660,8 +625,8 @@ table.list .del{
 </div>
 
 <button
-  class="add-btn"
-  onclick="addCard();"
+class="add-btn"
+onclick="addCard();"
 >
 + Karte hinzufügen
 </button>
@@ -677,6 +642,10 @@ Der QR-Code führt automatisch zu deinem eigenen
 
 </div>
 
+<!-- ========================================================
+     WERKZEUGLEISTE
+     ======================================================== -->
+
 <div class="toolbar">
 
 <button onclick="printCards();">
@@ -684,8 +653,8 @@ Der QR-Code führt automatisch zu deinem eigenen
 </button>
 
 <button
-  class="secondary"
-  onclick="exportJSON();"
+class="secondary"
+onclick="exportJSON();"
 >
 ⬇ Liste exportieren
 </button>
@@ -695,14 +664,18 @@ Der QR-Code führt automatisch zu deinem eigenen
 ⬆ Liste importieren
 
 <input
-  type="file"
-  accept="application/json"
-  onchange="importJSON(event)"
+type="file"
+accept="application/json"
+onchange="importJSON(event)"
 >
 
 </label>
 
 </div>
+
+<!-- ========================================================
+     TABELLE
+     ======================================================== -->
 
 <table
 class="list"
@@ -734,6 +707,10 @@ id="emptyMsg"
 >
 Noch keine Karten angelegt.
 </div>
+
+<!-- ========================================================
+     DRUCKBEREICH
+     ======================================================== -->
 
 <div id="printArea"></div>
 
@@ -776,30 +753,55 @@ COLORS[0];
 
 const PRINT = {
 
-pageWidth:210,
-pageHeight:297,
+  pageWidth:210,
+  pageHeight:297,
 
-cardWidth:65,
-cardHeight:65,
+  /*
+   * NEU:
+   * Karten sind jetzt 67 × 67 mm.
+   */
 
-gapX:3,
-gapY:3,
+  cardWidth:67,
+  cardHeight:67,
 
-top:8,
+  /*
+   * Abstand zwischen Karten
+   */
 
-columns:3,
-rows:4
+  gapX:3,
+  gapY:3,
+
+  /*
+   * Oberer Rand bleibt 8 mm.
+   */
+
+  top:8,
+
+  columns:3,
+  rows:4
 
 };
 
+/*
+ * Die 3 Karten werden automatisch
+ * exakt auf der A4-Seite zentriert.
+ *
+ * 67 + 3 + 67 + 3 + 67 = 207 mm
+ *
+ * 210 - 207 = 3 mm
+ *
+ * links/rechts = 1,5 mm
+ */
+
 PRINT.left =
 (
-PRINT.pageWidth -
-(
-PRINT.columns * PRINT.cardWidth +
-(PRINT.columns - 1) * PRINT.gapX
-)
+  PRINT.pageWidth -
+  (
+    PRINT.columns * PRINT.cardWidth +
+    (PRINT.columns - 1) * PRINT.gapX
+  )
 ) / 2;
+
 
 /* ============================================================
    YOUTUBE-ID
@@ -834,6 +836,7 @@ return m[1];
 return null;
 
 }
+
 
 /* ============================================================
    FARBE AUFHELLEN
@@ -881,6 +884,7 @@ return `rgb(${nr},${ng},${nb})`;
 
 }
 
+
 /* ============================================================
    PLAYER-LINK
    ============================================================ */
@@ -909,6 +913,7 @@ params.toString()
 );
 
 }
+
 
 /* ============================================================
    FARBWAHL
@@ -954,6 +959,7 @@ box.appendChild(s);
 }
 
 buildSwatches();
+
 
 /* ============================================================
    KARTE HINZUFÜGEN
@@ -1050,6 +1056,7 @@ renderTable();
 
 }
 
+
 /* ============================================================
    KARTE LÖSCHEN
    ============================================================ */
@@ -1061,6 +1068,7 @@ cards.splice(i,1);
 renderTable();
 
 }
+
 
 /* ============================================================
    TABELLE
@@ -1148,6 +1156,7 @@ body.appendChild(tr);
 
 }
 
+
 /* ============================================================
    EXPORT
    ============================================================ */
@@ -1193,6 +1202,7 @@ url
 );
 
 }
+
 
 /* ============================================================
    IMPORT
@@ -1245,6 +1255,7 @@ event.target.value = '';
 
 }
 
+
 /* ============================================================
    VORDERSEITEN-POSITION
    ============================================================ */
@@ -1285,6 +1296,7 @@ top:top
 
 }
 
+
 /* ============================================================
    RÜCKSEITEN-POSITION
    ============================================================ */
@@ -1300,8 +1312,16 @@ const col =
 index %
 PRINT.columns;
 
+
+/*
+ * Deine bisher funktionierende Feinjustierung.
+ *
+ * Bitte zunächst bei 0 lassen.
+ */
+
 const BACK_OFFSET_X = 0;
 const BACK_OFFSET_Y = 0;
+
 
 const left =
 PRINT.left +
@@ -1311,6 +1331,7 @@ PRINT.cardWidth +
 PRINT.gapX
 ) +
 BACK_OFFSET_X;
+
 
 const top =
 PRINT.pageHeight -
@@ -1323,6 +1344,7 @@ PRINT.gapY
 ) +
 BACK_OFFSET_Y;
 
+
 return {
 
 left:left,
@@ -1331,6 +1353,7 @@ top:top
 };
 
 }
+
 
 /* ============================================================
    KARTE POSITIONIEREN
@@ -1349,6 +1372,7 @@ cell.style.top =
 top + 'mm';
 
 }
+
 
 /* ============================================================
    DRUCKBLÄTTER ERZEUGEN
@@ -1379,6 +1403,7 @@ PER_SHEET
 
 const qrPromises = [];
 
+
 for(
 let s = 0;
 s < sheets;
@@ -1392,6 +1417,7 @@ s * PER_SHEET +
 PER_SHEET
 );
 
+
 /* ========================================================
    VORDERSEITE
    ======================================================== */
@@ -1403,6 +1429,7 @@ document.createElement(
 
 frontSheet.className =
 'sheet front-sheet';
+
 
 for(
 let i = 0;
@@ -1418,6 +1445,11 @@ document.createElement(
 'div'
 );
 
+
+/*
+ * Exakte Vorderseitenposition
+ */
+
 const pos =
 getCardPosition(i);
 
@@ -1426,6 +1458,11 @@ cell,
 pos.left,
 pos.top
 );
+
+
+/*
+ * Leerer Platz
+ */
 
 if(!c){
 
@@ -1440,15 +1477,20 @@ continue;
 
 }
 
+
 cell.className =
 'cell';
+
 
 const globalIndex =
 s * PER_SHEET +
 i +
 1;
 
-/* Vorderseite */
+
+/* ========================================================
+   VORDERSEITE
+   ======================================================== */
 
 const face =
 document.createElement(
@@ -1458,7 +1500,10 @@ document.createElement(
 face.className =
 'front-face';
 
-/* Kartennummer */
+
+/* ========================================================
+   KARTENNUMMER
+   ======================================================== */
 
 const num =
 document.createElement(
@@ -1474,7 +1519,10 @@ c.color;
 num.textContent =
 globalIndex;
 
-/* QR */
+
+/* ========================================================
+   QR-CODE
+   ======================================================== */
 
 const qrBox =
 document.createElement(
@@ -1483,6 +1531,7 @@ document.createElement(
 
 qrBox.className =
 'qr';
+
 
 const canvas =
 document.createElement(
@@ -1493,6 +1542,7 @@ qrBox.appendChild(
 canvas
 );
 
+
 face.appendChild(
 qrBox
 );
@@ -1501,39 +1551,55 @@ face.appendChild(
 num
 );
 
+
 cell.appendChild(
 face
 );
+
 
 frontSheet.appendChild(
 cell
 );
 
-/* QR erzeugen */
+
+/*
+ * QR-Code erzeugen
+ *
+ * WEISSER QR-CODE
+ * AUF SCHWARZEM HINTERGRUND
+ */
 
 qrPromises.push(
 
 QRCode.toCanvas(
-  canvas,
-  c.link,
-  {
-    margin:1,
-    width:400,
-    errorCorrectionLevel:'M',
-    color:{
-      dark:'#ffffff',
-      light:'#101014'
-    }
-  }
+
+canvas,
+
+c.link,
+
+{
+margin:1,
+width:400,
+errorCorrectionLevel:'M',
+
+color:{
+dark:'#ffffff',
+light:'#101014'
+}
+
+}
+
 )
 
 );
 
 }
 
+
 area.appendChild(
 frontSheet
 );
+
 
 /* ========================================================
    RÜCKSEITE
@@ -1547,6 +1613,7 @@ document.createElement(
 backSheet.className =
 'sheet back-sheet';
 
+
 for(
 let i = 0;
 i < PER_SHEET;
@@ -1556,19 +1623,27 @@ i++
 const c =
 sheetCards[i];
 
+
 const pos =
 getBackCardPosition(i);
+
 
 const cell =
 document.createElement(
 'div'
 );
 
+
 positionCell(
 cell,
 pos.left,
 pos.top
 );
+
+
+/*
+ * Leerer Platz
+ */
 
 if(!c){
 
@@ -1583,15 +1658,20 @@ continue;
 
 }
 
+
 cell.className =
 'cell';
+
 
 const globalIndex =
 s * PER_SHEET +
 i +
 1;
 
-/* Rückseite */
+
+/* ========================================================
+   RÜCKSEITE
+   ======================================================== */
 
 const face =
 document.createElement(
@@ -1601,11 +1681,13 @@ document.createElement(
 face.className =
 'back-face';
 
+
 face.style.background =
 lightenColor(
 c.color,
 0.6
 );
+
 
 face.innerHTML = `
 
@@ -1627,9 +1709,11 @@ ${c.title}
 
 `;
 
+
 cell.appendChild(
 face
 );
+
 
 backSheet.appendChild(
 cell
@@ -1637,17 +1721,24 @@ cell
 
 }
 
+
 area.appendChild(
 backSheet
 );
 
 }
 
+
+/*
+ * Warten bis alle QR-Codes fertig sind.
+ */
+
 await Promise.all(
 qrPromises
 );
 
 }
+
 
 /* ============================================================
    DRUCKEN
@@ -1665,6 +1756,7 @@ return;
 
 }
 
+
 if(
 typeof QRCode ===
 'undefined'
@@ -1678,6 +1770,7 @@ alert(
 return;
 
 }
+
 
 renderPrint()
 
@@ -1699,6 +1792,7 @@ err.message
 });
 
 }
+
 
 /* ============================================================
    START
