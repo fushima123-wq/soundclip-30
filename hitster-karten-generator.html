@@ -8,244 +8,553 @@
 
 <style>
 
-  :root{
-    --ink:#151417;
-    --paper:#f6f3ee;
-    --panel:#1d1c20;
-    --accent:#e8483a;
-    --accent2:#2f6f5e;
-    --line:#d9d3c7;
-    --gold:#c9a24b;
-  }
+:root{
+  --ink:#151417;
+  --paper:#f6f3ee;
+  --panel:#1d1c20;
+  --accent:#e8483a;
+  --accent2:#2f6f5e;
+  --line:#d9d3c7;
+  --gold:#c9a24b;
+}
 
-  *{
-    box-sizing:border-box;
-  }
+*{
+  box-sizing:border-box;
+}
 
+body{
+  margin:0;
+  font-family:'Helvetica Neue',Arial,sans-serif;
+  background:var(--paper);
+  color:var(--ink);
+}
+
+/* ==========================================================
+   OBERFLÄCHE
+   ========================================================== */
+
+header{
+  background:var(--panel);
+  color:var(--paper);
+  padding:28px 24px 22px;
+  text-align:center;
+}
+
+header h1{
+  margin:0;
+  font-size:26px;
+  letter-spacing:0.06em;
+  text-transform:uppercase;
+}
+
+header p{
+  margin:8px 0 0;
+  color:#b9b6c0;
+  font-size:14px;
+}
+
+.wrap{
+  max-width:980px;
+  margin:0 auto;
+  padding:24px 20px 60px;
+}
+
+.card-form{
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:10px;
+  padding:20px;
+  margin-bottom:28px;
+}
+
+.card-form h2{
+  margin:0 0 14px;
+  font-size:16px;
+  text-transform:uppercase;
+  letter-spacing:0.05em;
+  color:var(--panel);
+}
+
+.grid-form{
+  display:grid;
+  grid-template-columns:2fr 2fr 1fr 3fr;
+  gap:12px;
+}
+
+.grid-form label{
+  display:block;
+  font-size:11px;
+  text-transform:uppercase;
+  letter-spacing:0.04em;
+  color:#777;
+  margin-bottom:4px;
+}
+
+.grid-form input,
+.grid-form select{
+  width:100%;
+  padding:9px 10px;
+  border:1px solid var(--line);
+  border-radius:6px;
+  font-size:14px;
+}
+
+.swatches{
+  display:flex;
+  gap:6px;
+  margin-top:6px;
+}
+
+.swatch{
+  width:22px;
+  height:22px;
+  border-radius:50%;
+  cursor:pointer;
+  border:2px solid transparent;
+}
+
+.swatch.selected{
+  border-color:var(--panel);
+}
+
+.add-btn{
+  margin-top:14px;
+  background:var(--accent);
+  color:#fff;
+  border:none;
+  padding:11px 20px;
+  border-radius:6px;
+  font-size:14px;
+  font-weight:600;
+  cursor:pointer;
+  letter-spacing:0.03em;
+}
+
+.add-btn:hover{
+  opacity:0.9;
+}
+
+.toolbar{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-bottom:20px;
+}
+
+.toolbar button,
+.toolbar label.file-btn{
+  background:var(--panel);
+  color:#fff;
+  border:none;
+  padding:9px 16px;
+  border-radius:6px;
+  font-size:13px;
+  cursor:pointer;
+}
+
+.toolbar button.secondary{
+  background:#fff;
+  color:var(--panel);
+  border:1px solid var(--line);
+}
+
+.toolbar input[type=file]{
+  display:none;
+}
+
+table.list{
+  width:100%;
+  border-collapse:collapse;
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:10px;
+  overflow:hidden;
+}
+
+table.list th{
+  text-align:left;
+  background:#efeae0;
+  font-size:11px;
+  text-transform:uppercase;
+  letter-spacing:0.04em;
+  padding:10px 12px;
+  color:#666;
+}
+
+table.list td{
+  padding:10px 12px;
+  border-top:1px solid var(--line);
+  font-size:14px;
+}
+
+table.list .del{
+  color:var(--accent);
+  cursor:pointer;
+  font-size:13px;
+  background:none;
+  border:none;
+}
+
+.dot{
+  width:14px;
+  height:14px;
+  border-radius:50%;
+  display:inline-block;
+}
+
+.empty{
+  padding:30px;
+  text-align:center;
+  color:#999;
+  font-size:14px;
+  background:#fff;
+  border:1px dashed var(--line);
+  border-radius:10px;
+}
+
+.hint{
+  font-size:12.5px;
+  color:#777;
+  margin-top:8px;
+  line-height:1.5;
+}
+
+/* ==========================================================
+   DRUCKBEREICH
+   ========================================================== */
+
+#printArea{
+  display:none;
+}
+
+.sheet{
+  position:relative;
+
+  width:210mm;
+  height:297mm;
+
+  margin:0;
+  padding:0;
+
+  background:#fff;
+
+  overflow:hidden;
+
+  display:block;
+}
+
+/* ==========================================================
+   KARTE
+   ========================================================== */
+
+.cell{
+  position:absolute;
+
+  width:65mm;
+  height:65mm;
+
+  margin:0;
+  padding:0;
+
+  border:0.3mm dashed #bbb;
+
+  /*
+   * WICHTIG:
+   * Der schwarze Überstand darf sichtbar sein.
+   */
+  overflow:visible;
+
+  box-sizing:border-box;
+}
+
+.cell.empty-cell{
+  border:none;
+}
+
+/* ==========================================================
+   SCHWARZER ÜBERSTAND
+   ========================================================== */
+
+/*
+ * Dieser Bereich ist 67 × 67 mm.
+ *
+ * Die eigentliche Karte bleibt 65 × 65 mm.
+ *
+ * Der schwarze Bereich ragt jeweils
+ * 1 mm über die Karte hinaus.
+ */
+
+.front-face{
+  position:absolute;
+
+  left:0;
+  top:0;
+
+  width:65mm;
+  height:65mm;
+
+  background-color:#101014;
+
+  display:flex;
+
+  align-items:center;
+  justify-content:center;
+
+  overflow:visible;
+
+  -webkit-print-color-adjust:exact;
+  print-color-adjust:exact;
+  color-adjust:exact;
+}
+
+/*
+ * Schwarzer Bereich hinter der eigentlichen Grafik.
+ */
+
+.front-face::before{
+  content:"";
+
+  position:absolute;
+
+  left:-1mm;
+  top:-1mm;
+
+  width:67mm;
+  height:67mm;
+
+  background:#101014;
+
+  z-index:-1;
+
+  -webkit-print-color-adjust:exact;
+  print-color-adjust:exact;
+  color-adjust:exact;
+}
+
+/* ==========================================================
+   RINGE
+   ========================================================== */
+
+/*
+ * Die Ringe bleiben exakt 65 × 65 mm.
+ *
+ * Dadurch werden sie NICHT vergrößert.
+ */
+
+.front-face::after{
+  content:"";
+
+  position:absolute;
+
+  left:0;
+  top:0;
+
+  width:65mm;
+  height:65mm;
+
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Ccircle cx='100' cy='100' r='94' fill='none' stroke='%232b8cff' stroke-width='2.2' stroke-linecap='round' stroke-dasharray='95 35 55 25' transform='rotate(10 100 100)'/%3E%3Ccircle cx='100' cy='100' r='83' fill='none' stroke='%23ff3d81' stroke-width='2.2' stroke-linecap='round' stroke-dasharray='80 32 44 20' transform='rotate(140 100 100)'/%3E%3Ccircle cx='100' cy='100' r='72' fill='none' stroke='%23ffd23d' stroke-width='2.2' stroke-linecap='round' stroke-dasharray='68 28 38 18' transform='rotate(250 100 100)'/%3E%3Ccircle cx='100' cy='100' r='61' fill='none' stroke='%2300c2a8' stroke-width='2.2' stroke-linecap='round' stroke-dasharray='58 24 32 16' transform='rotate(320 100 100)'/%3E%3Ccircle cx='100' cy='100' r='50' fill='none' stroke='%23ff8a3d' stroke-width='2.2' stroke-linecap='round' stroke-dasharray='48 20 28 14' transform='rotate(60 100 100)'/%3E%3Ccircle cx='100' cy='100' r='39' fill='none' stroke='%239b59f6' stroke-width='2.2' stroke-linecap='round' stroke-dasharray='38 16 22 11' transform='rotate(200 100 100)'/%3E%3Ccircle cx='100' cy='100' r='28' fill='none' stroke='%23ff5252' stroke-width='2.2' stroke-linecap='round' stroke-dasharray='28 12 16 8' transform='rotate(100 100 100)'/%3E%3C/svg%3E");
+
+  background-size:65mm 65mm;
+  background-position:center;
+  background-repeat:no-repeat;
+
+  pointer-events:none;
+
+  z-index:1;
+}
+
+/* ==========================================================
+   QR-CODE
+   ========================================================== */
+
+.front-face .qr{
+  width:25mm;
+  height:25mm;
+
+  position:relative;
+
+  z-index:2;
+
+  line-height:0;
+}
+
+.front-face .qr img,
+.front-face .qr canvas{
+  width:25mm !important;
+  height:25mm !important;
+
+  display:block;
+}
+
+/* ==========================================================
+   NUMMER
+   ========================================================== */
+
+.front-face .num{
+  position:absolute;
+
+  top:2.5mm;
+  left:2.5mm;
+
+  width:5mm;
+  height:5mm;
+
+  border-radius:50%;
+
+  display:flex;
+
+  align-items:center;
+  justify-content:center;
+
+  color:#fff;
+
+  font-size:7px;
+  font-weight:600;
+
+  font-family:Arial,sans-serif;
+
+  z-index:3;
+
+  opacity:0.7;
+
+  -webkit-print-color-adjust:exact;
+  print-color-adjust:exact;
+  color-adjust:exact;
+}
+
+/* ==========================================================
+   RÜCKSEITE
+   ========================================================== */
+
+.back-face{
+  position:absolute;
+
+  left:0;
+  top:0;
+
+  width:65mm;
+  height:65mm;
+
+  display:flex;
+
+  flex-direction:column;
+
+  align-items:center;
+  justify-content:center;
+
+  text-align:center;
+
+  padding:6mm;
+
+  overflow:hidden;
+
+  transform:rotate(180deg);
+
+  -webkit-print-color-adjust:exact;
+  print-color-adjust:exact;
+  color-adjust:exact;
+}
+
+.back-face .artist{
+  font-size:4mm;
+
+  font-weight:600;
+
+  letter-spacing:0.01em;
+
+  color:var(--ink);
+}
+
+.back-face .year{
+  font-size:14mm;
+
+  font-weight:800;
+
+  letter-spacing:0.01em;
+
+  color:var(--ink);
+
+  margin-top:11mm;
+  margin-bottom:13mm;
+
+  line-height:1;
+}
+
+.back-face .title{
+  font-size:4mm;
+
+  font-style:italic;
+
+  color:var(--ink);
+
+  opacity:0.9;
+}
+
+.back-face .idx{
+  position:absolute;
+
+  bottom:2.5mm;
+  right:3mm;
+
+  font-size:7px;
+
+  color:rgba(0,0,0,0.35);
+
+  font-family:Arial,sans-serif;
+}
+
+/* ==========================================================
+   DRUCK
+   ========================================================== */
+
+@page{
+  size:A4 portrait;
+  margin:0;
+}
+
+@media print{
+
+  html,
   body{
-    margin:0;
-    font-family:'Helvetica Neue',Arial,sans-serif;
-    background:var(--paper);
-    color:var(--ink);
-  }
-
-  /* ==========================================================
-     OBERFLÄCHE
-     ========================================================== */
-
-  header{
-    background:var(--panel);
-    color:var(--paper);
-    padding:28px 24px 22px;
-    text-align:center;
-  }
-
-  header h1{
-    margin:0;
-    font-size:26px;
-    letter-spacing:0.06em;
-    text-transform:uppercase;
-  }
-
-  header p{
-    margin:8px 0 0;
-    color:#b9b6c0;
-    font-size:14px;
-  }
-
-  .wrap{
-    max-width:980px;
-    margin:0 auto;
-    padding:24px 20px 60px;
-  }
-
-  .card-form{
-    background:#fff;
-    border:1px solid var(--line);
-    border-radius:10px;
-    padding:20px;
-    margin-bottom:28px;
-  }
-
-  .card-form h2{
-    margin:0 0 14px;
-    font-size:16px;
-    text-transform:uppercase;
-    letter-spacing:0.05em;
-    color:var(--panel);
-  }
-
-  .grid-form{
-    display:grid;
-    grid-template-columns:2fr 2fr 1fr 3fr;
-    gap:12px;
-  }
-
-  .grid-form label{
-    display:block;
-    font-size:11px;
-    text-transform:uppercase;
-    letter-spacing:0.04em;
-    color:#777;
-    margin-bottom:4px;
-  }
-
-  .grid-form input,
-  .grid-form select{
-    width:100%;
-    padding:9px 10px;
-    border:1px solid var(--line);
-    border-radius:6px;
-    font-size:14px;
-  }
-
-  .swatches{
-    display:flex;
-    gap:6px;
-    margin-top:6px;
-  }
-
-  .swatch{
-    width:22px;
-    height:22px;
-    border-radius:50%;
-    cursor:pointer;
-    border:2px solid transparent;
-  }
-
-  .swatch.selected{
-    border-color:var(--panel);
-  }
-
-  .add-btn{
-    margin-top:14px;
-    background:var(--accent);
-    color:#fff;
-    border:none;
-    padding:11px 20px;
-    border-radius:6px;
-    font-size:14px;
-    font-weight:600;
-    cursor:pointer;
-    letter-spacing:0.03em;
-  }
-
-  .add-btn:hover{
-    opacity:0.9;
-  }
-
-  .toolbar{
-    display:flex;
-    gap:10px;
-    flex-wrap:wrap;
-    margin-bottom:20px;
-  }
-
-  .toolbar button,
-  .toolbar label.file-btn{
-    background:var(--panel);
-    color:#fff;
-    border:none;
-    padding:9px 16px;
-    border-radius:6px;
-    font-size:13px;
-    cursor:pointer;
-  }
-
-  .toolbar button.secondary{
-    background:#fff;
-    color:var(--panel);
-    border:1px solid var(--line);
-  }
-
-  .toolbar input[type=file]{
-    display:none;
-  }
-
-  table.list{
-    width:100%;
-    border-collapse:collapse;
-    background:#fff;
-    border:1px solid var(--line);
-    border-radius:10px;
-    overflow:hidden;
-  }
-
-  table.list th{
-    text-align:left;
-    background:#efeae0;
-    font-size:11px;
-    text-transform:uppercase;
-    letter-spacing:0.04em;
-    padding:10px 12px;
-    color:#666;
-  }
-
-  table.list td{
-    padding:10px 12px;
-    border-top:1px solid var(--line);
-    font-size:14px;
-  }
-
-  table.list .del{
-    color:var(--accent);
-    cursor:pointer;
-    font-size:13px;
-    background:none;
-    border:none;
-  }
-
-  .dot{
-    width:14px;
-    height:14px;
-    border-radius:50%;
-    display:inline-block;
-  }
-
-  .empty{
-    padding:30px;
-    text-align:center;
-    color:#999;
-    font-size:14px;
-    background:#fff;
-    border:1px dashed var(--line);
-    border-radius:10px;
-  }
-
-  .hint{
-    font-size:12.5px;
-    color:#777;
-    margin-top:8px;
-    line-height:1.5;
-  }
-
-  /* ==========================================================
-     DRUCKBEREICH
-     ========================================================== */
-
-  #printArea{
-    display:none;
-  }
-
-  .sheet{
-    position:relative;
-
     width:210mm;
-    height:297mm;
 
     margin:0;
     padding:0;
 
     background:#fff;
-
-    overflow:hidden;
-
-    display:block;
   }
 
-  /* ==========================================================
-     KARTE
-     ========================================================== */
+  header,
+  .wrap > *:not(#printArea){
+    display:none !important;
+  }
+
+  #printArea{
+    display:block;
+
+    width:210mm;
+
+    margin:0;
+    padding:0;
+  }
+
+  .sheet{
+    width:210mm;
+    height:297mm;
+
+    margin:0 !important;
+    padding:0 !important;
+
+    overflow:visible;
+
+    page-break-after:always;
+    break-after:page;
+  }
+
+  .sheet:last-child{
+    page-break-after:auto !important;
+    break-after:auto !important;
+  }
 
   .cell{
     position:absolute;
@@ -253,319 +562,9 @@
     width:65mm;
     height:65mm;
 
-    margin:0;
-    padding:0;
-
-    border:0.3mm dashed #bbb;
-
-    /*
-     * Wichtig:
-     * Der schwarze Bereich der Vorderseite ist größer als
-     * die eigentliche 65-mm-Schnittfläche.
-     */
     overflow:visible;
-
-    box-sizing:border-box;
   }
-
-  .cell.empty-cell{
-    border:none;
-  }
-
-  /* ==========================================================
-     VORDERSEITE
-     ========================================================== */
-
-.front-face{
-    position:absolute;
-
-    /*
-     * Der schwarze Bereich wird 2 mm größer:
-     * 1 mm nach links
-     * 1 mm nach rechts
-     * 1 mm nach oben
-     * 1 mm nach unten
-     */
-    left:-1mm;
-    top:-1mm;
-
-    width:67mm;
-    height:67mm;
-
-    background-color:#101014;
-
-    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Ccircle cx='100' cy='100' r='94' fill='none' stroke='%232b8cff' stroke-width='2.2' stroke-linecap='round' stroke-dasharray='95 35 55 25' transform='rotate(10 100 100)'/%3E%3Ccircle cx='100' cy='100' r='83' fill='none' stroke='%23ff3d81' stroke-width='2.2' stroke-linecap='round' stroke-dasharray='80 32 44 20' transform='rotate(140 100 100)'/%3E%3Ccircle cx='100' cy='100' r='72' fill='none' stroke='%23ffd23d' stroke-width='2.2' stroke-linecap='round' stroke-dasharray='68 28 38 18' transform='rotate(250 100 100)'/%3E%3Ccircle cx='100' cy='100' r='61' fill='none' stroke='%2300c2a8' stroke-width='2.2' stroke-linecap='round' stroke-dasharray='58 24 32 16' transform='rotate(320 100 100)'/%3E%3Ccircle cx='100' cy='100' r='50' fill='none' stroke='%23ff8a3d' stroke-width='2.2' stroke-linecap='round' stroke-dasharray='48 20 28 14' transform='rotate(60 100 100)'/%3E%3Ccircle cx='100' cy='100' r='39' fill='none' stroke='%239b59f6' stroke-width='2.2' stroke-linecap='round' stroke-dasharray='38 16 22 11' transform='rotate(200 100 100)'/%3E%3Ccircle cx='100' cy='100' r='28' fill='none' stroke='%23ff5252' stroke-width='2.2' stroke-linecap='round' stroke-dasharray='28 12 16 8' transform='rotate(100 100 100)'/%3E%3C/svg%3E");
-
-    background-size:65mm 65mm;
-    background-repeat:no-repeat;
-    background-position:center;
-
-    display:flex;
-
-    align-items:center;
-    justify-content:center;
-
-    overflow:visible;
-
-    -webkit-print-color-adjust:exact;
-    print-color-adjust:exact;
-    color-adjust:exact;
 }
-
-  /*
-   * ==========================================================
-   * SCHWARZER BEREICH
-   * ==========================================================
-   *
-   * 69 x 69 mm
-   *
-   * Die eigentliche Karte bleibt 65 x 65 mm.
-   *
-   * Dadurch stehen jeweils 2 mm Schwarz über:
-   *
-   * links   2 mm
-   * rechts  2 mm
-   * oben    2 mm
-   * unten   2 mm
-   *
-   * Die Ringe werden NICHT größer.
-   */
-
-  .front-face::before{
-
-    content:"";
-
-    position:absolute;
-
-    width:69mm;
-    height:69mm;
-
-    left:50%;
-    top:50%;
-
-    transform:translate(-50%,-50%);
-
-    background:#101014;
-
-    /*
-     * Hinter den Ringen, aber innerhalb
-     * der Vorderseite.
-     */
-    z-index:-1;
-
-    -webkit-print-color-adjust:exact;
-    print-color-adjust:exact;
-    color-adjust:exact;
-  }
-
-  .front-face .qr{
-    width:25mm;
-    height:25mm;
-
-    position:relative;
-
-    z-index:2;
-
-    line-height:0;
-  }
-
-  .front-face .qr img,
-  .front-face .qr canvas{
-    width:25mm !important;
-    height:25mm !important;
-
-    display:block;
-  }
-
-  .front-face .num{
-    position:absolute;
-
-    top:2.5mm;
-    left:2.5mm;
-
-    width:5mm;
-    height:5mm;
-
-    border-radius:50%;
-
-    display:flex;
-
-    align-items:center;
-    justify-content:center;
-
-    color:#fff;
-
-    font-size:7px;
-    font-weight:600;
-
-    font-family:Arial,sans-serif;
-
-    z-index:2;
-
-    opacity:0.7;
-
-    -webkit-print-color-adjust:exact;
-    print-color-adjust:exact;
-    color-adjust:exact;
-  }
-
-  /* ==========================================================
-     RÜCKSEITE
-     ========================================================== */
-
-  .back-face{
-    position:absolute;
-
-    left:0;
-    top:0;
-
-    width:65mm;
-    height:65mm;
-
-    display:flex;
-
-    flex-direction:column;
-
-    align-items:center;
-    justify-content:center;
-
-    text-align:center;
-
-    padding:6mm;
-
-    overflow:hidden;
-
-    /*
-     * WICHTIG:
-     *
-     * Der Drucker wird auf
-     * "an kurzer Seite wenden"
-     * gestellt.
-     *
-     * Deshalb wird die Rückseite innerhalb
-     * ihrer Karte um 180° gedreht.
-     */
-    transform:rotate(180deg);
-
-    -webkit-print-color-adjust:exact;
-    print-color-adjust:exact;
-    color-adjust:exact;
-  }
-
-  .back-face .artist{
-    font-size:4mm;
-
-    font-weight:600;
-
-    letter-spacing:0.01em;
-
-    color:var(--ink);
-  }
-
-  .back-face .year{
-    font-size:14mm;
-
-    font-weight:800;
-
-    letter-spacing:0.01em;
-
-    color:var(--ink);
-
-    margin-top:11mm;
-    margin-bottom:13mm;
-
-    line-height:1;
-  }
-
-  .back-face .title{
-    font-size:4mm;
-
-    font-style:italic;
-
-    color:var(--ink);
-
-    opacity:0.9;
-  }
-
-  .back-face .idx{
-    position:absolute;
-
-    bottom:2.5mm;
-    right:3mm;
-
-    font-size:7px;
-
-    color:rgba(0,0,0,0.35);
-
-    font-family:Arial,sans-serif;
-  }
-
-  /* ==========================================================
-     DRUCK
-     ========================================================== */
-
-  @page{
-    size:A4 portrait;
-    margin:0;
-  }
-
-  @media print{
-
-    html,
-    body{
-      width:210mm;
-
-      margin:0;
-      padding:0;
-
-      background:#fff;
-    }
-
-    header,
-    .wrap > *:not(#printArea){
-      display:none !important;
-    }
-
-    #printArea{
-      display:block;
-
-      width:210mm;
-
-      margin:0;
-      padding:0;
-    }
-
-    .sheet{
-      width:210mm;
-      height:297mm;
-
-      margin:0 !important;
-      padding:0 !important;
-
-      overflow:hidden;
-
-      page-break-after:always;
-      break-after:page;
-    }
-
-    /*
-     * Die letzte Druckseite darf keinen
-     * zusätzlichen Seitenumbruch erzeugen.
-     */
-    .sheet:last-child{
-      page-break-after:auto !important;
-      break-after:auto !important;
-    }
-
-    .cell{
-      position:absolute;
-
-      width:65mm;
-      height:65mm;
-
-      overflow:visible;
-    }
-  }
 
 </style>
 </head>
@@ -586,173 +585,157 @@
 
 <div class="wrap">
 
-  <!-- ========================================================
-       FORMULAR
-       ======================================================== -->
+<div class="card-form">
 
-  <div class="card-form">
+<h2>Neue Karte</h2>
 
-    <h2>Neue Karte</h2>
+<div class="grid-form">
 
-    <div class="grid-form">
+<div>
 
-      <div>
+<label>Jahr</label>
 
-        <label>Jahr</label>
+<input
+  type="text"
+  id="f-year"
+  placeholder="1987"
+>
 
-        <input
-          type="text"
-          id="f-year"
-          placeholder="1987"
-        >
+</div>
 
-      </div>
+<div>
 
-      <div>
+<label>Interpret</label>
 
-        <label>Interpret</label>
+<input
+  type="text"
+  id="f-artist"
+  placeholder="Depeche Mode"
+>
 
-        <input
-          type="text"
-          id="f-artist"
-          placeholder="Depeche Mode"
-        >
+</div>
 
-      </div>
+<div>
 
-      <div>
+<label>Kategorie-Farbe</label>
 
-        <label>Kategorie-Farbe</label>
+<div
+  class="swatches"
+  id="swatches"
+></div>
 
-        <div
-          class="swatches"
-          id="swatches"
-        ></div>
+</div>
 
-      </div>
+<div>
 
-      <div>
+<label>Songtitel</label>
 
-        <label>Songtitel</label>
+<input
+  type="text"
+  id="f-title"
+  placeholder="Never Let Me Down Again"
+>
 
-        <input
-          type="text"
-          id="f-title"
-          placeholder="Never Let Me Down Again"
-        >
+</div>
 
-      </div>
+</div>
 
-    </div>
+<div
+  class="grid-form"
+  style="grid-template-columns:1fr;margin-top:12px;"
+>
 
-    <div
-      class="grid-form"
-      style="grid-template-columns:1fr;margin-top:12px;"
-    >
+<div>
 
-      <div>
+<label>YouTube-Link zum Song</label>
 
-        <label>YouTube-Link zum Song</label>
+<input
+  type="text"
+  id="f-link"
+  placeholder="https://www.youtube.com/watch?v=..."
+>
 
-        <input
-          type="text"
-          id="f-link"
-          placeholder="https://www.youtube.com/watch?v=..."
-        >
+</div>
 
-      </div>
+</div>
 
-    </div>
+<button
+  class="add-btn"
+  onclick="addCard();"
+>
++ Karte hinzufügen
+</button>
 
-    <button
-      class="add-btn"
-      onclick="addCard();"
-    >
-      + Karte hinzufügen
-    </button>
+<div class="hint">
 
-    <div class="hint">
+Der QR-Code führt automatisch zu deinem eigenen
+30-Sekunden-Player:
 
-      Der QR-Code führt automatisch zu deinem eigenen
-      30-Sekunden-Player:
+<span id="playerBaseDisplay"></span>
 
-      <span id="playerBaseDisplay"></span>
+</div>
 
-    </div>
+</div>
 
-  </div>
+<div class="toolbar">
 
-  <!-- ========================================================
-       WERKZEUGLEISTE
-       ======================================================== -->
+<button onclick="printCards();">
+🖨 Karten drucken / als PDF speichern
+</button>
 
-  <div class="toolbar">
+<button
+  class="secondary"
+  onclick="exportJSON();"
+>
+⬇ Liste exportieren
+</button>
 
-    <button onclick="printCards();">
-      🖨 Karten drucken / als PDF speichern
-    </button>
+<label class="file-btn secondary">
 
-    <button
-      class="secondary"
-      onclick="exportJSON();"
-    >
-      ⬇ Liste exportieren
-    </button>
+⬆ Liste importieren
 
-    <label class="file-btn secondary">
+<input
+  type="file"
+  accept="application/json"
+  onchange="importJSON(event)"
+>
 
-      ⬆ Liste importieren
+</label>
 
-      <input
-        type="file"
-        accept="application/json"
-        onchange="importJSON(event)"
-      >
+</div>
 
-    </label>
+<table
+class="list"
+id="cardTable"
+>
 
-  </div>
+<thead>
 
-  <!-- ========================================================
-       TABELLE
-       ======================================================== -->
+<tr>
 
-  <table
-    class="list"
-    id="cardTable"
-  >
+<th>#</th>
+<th>Farbe</th>
+<th>Jahr</th>
+<th>Interpret</th>
+<th>Titel</th>
+<th></th>
 
-    <thead>
+</tr>
 
-      <tr>
+</thead>
 
-        <th>#</th>
-        <th>Farbe</th>
-        <th>Jahr</th>
-        <th>Interpret</th>
-        <th>Titel</th>
-        <th></th>
+<tbody id="cardTableBody"></tbody>
 
-      </tr>
+</table>
 
-    </thead>
+<div
+class="empty"
+id="emptyMsg"
+>
+Noch keine Karten angelegt.
+</div>
 
-    <tbody id="cardTableBody"></tbody>
-
-  </table>
-
-  <div
-    class="empty"
-    id="emptyMsg"
-  >
-    Noch keine Karten angelegt.
-  </div>
-
-  <!-- ========================================================
-       DRUCKBEREICH
-       ======================================================== -->
-
-  <div id="printArea"></div>
+<div id="printArea"></div>
 
 </div>
 
@@ -764,29 +747,28 @@
 
 const COLORS = [
 
-  '#e8483a',
-  '#2f6f5e',
-  '#c9a24b',
-  '#3d5a99',
-  '#8a4b9e',
-  '#2b8c8c',
-  '#c76b2a',
-  '#555555'
+'#e8483a',
+'#2f6f5e',
+'#c9a24b',
+'#3d5a99',
+'#8a4b9e',
+'#2b8c8c',
+'#c76b2a',
+'#555555'
 
 ];
 
 const PLAYER_BASE =
-  'https://fushima123-wq.github.io/soundclip-30/player.html';
+'https://fushima123-wq.github.io/soundclip-30/player.html';
 
 document.getElementById(
-  'playerBaseDisplay'
+'playerBaseDisplay'
 ).textContent = PLAYER_BASE;
 
 let cards = [];
 
 let selectedColor =
-  COLORS[0];
-
+COLORS[0];
 
 /* ============================================================
    DRUCKMAẞE
@@ -794,44 +776,30 @@ let selectedColor =
 
 const PRINT = {
 
-  pageWidth:210,
-  pageHeight:297,
+pageWidth:210,
+pageHeight:297,
 
-  cardWidth:65,
-  cardHeight:65,
+cardWidth:65,
+cardHeight:65,
 
-  gapX:3,
-  gapY:3,
+gapX:3,
+gapY:3,
 
-  top:8,
+top:8,
 
-  columns:3,
-  rows:4
+columns:3,
+rows:4
 
 };
 
-
-/*
- * Gesamtbreite:
- *
- * 65 + 3 + 65 + 3 + 65 = 201 mm
- *
- * 210 - 201 = 9 mm
- *
- * links/rechts:
- *
- * 9 / 2 = 4.5 mm
- */
-
 PRINT.left =
-  (
-    PRINT.pageWidth -
-    (
-      PRINT.columns * PRINT.cardWidth +
-      (PRINT.columns - 1) * PRINT.gapX
-    )
-  ) / 2;
-
+(
+PRINT.pageWidth -
+(
+PRINT.columns * PRINT.cardWidth +
+(PRINT.columns - 1) * PRINT.gapX
+)
+) / 2;
 
 /* ============================================================
    YOUTUBE-ID
@@ -839,33 +807,33 @@ PRINT.left =
 
 function extractYouTubeId(url){
 
-  const patterns = [
+const patterns = [
 
-    /(?:youtube\.com\/watch\?v=)([\w-]{11})/,
+/(?:youtube\.com\/watch\?v=)([\w-]{11})/,
 
-    /(?:youtu\.be\/)([\w-]{11})/,
+/(?:youtu\.be\/)([\w-]{11})/,
 
-    /(?:youtube\.com\/shorts\/)([\w-]{11})/,
+/(?:youtube\.com\/shorts\/)([\w-]{11})/,
 
-    /(?:youtube\.com\/embed\/)([\w-]{11})/
+/(?:youtube\.com\/embed\/)([\w-]{11})/
 
-  ];
+];
 
-  for(const p of patterns){
+for(const p of patterns){
 
-    const m = url.match(p);
+const m = url.match(p);
 
-    if(m){
+if(m){
 
-      return m[1];
+return m[1];
 
-    }
-
-  }
-
-  return null;
 }
 
+}
+
+return null;
+
+}
 
 /* ============================================================
    FARBE AUFHELLEN
@@ -873,74 +841,74 @@ function extractYouTubeId(url){
 
 function lightenColor(hex,percent){
 
-  hex =
-    hex.replace('#','');
+hex =
+hex.replace('#','');
 
-  const r =
-    parseInt(
-      hex.substring(0,2),
-      16
-    );
+const r =
+parseInt(
+hex.substring(0,2),
+16
+);
 
-  const g =
-    parseInt(
-      hex.substring(2,4),
-      16
-    );
+const g =
+parseInt(
+hex.substring(2,4),
+16
+);
 
-  const b =
-    parseInt(
-      hex.substring(4,6),
-      16
-    );
+const b =
+parseInt(
+hex.substring(4,6),
+16
+);
 
-  const nr =
-    Math.round(
-      r + (255-r)*percent
-    );
+const nr =
+Math.round(
+r + (255-r)*percent
+);
 
-  const ng =
-    Math.round(
-      g + (255-g)*percent
-    );
+const ng =
+Math.round(
+g + (255-g)*percent
+);
 
-  const nb =
-    Math.round(
-      b + (255-b)*percent
-    );
+const nb =
+Math.round(
+b + (255-b)*percent
+);
 
-  return `rgb(${nr},${ng},${nb})`;
+return `rgb(${nr},${ng},${nb})`;
+
 }
-
 
 /* ============================================================
    PLAYER-LINK
    ============================================================ */
 
 function buildPlayerLink(
-  year,
-  artist,
-  title,
-  videoId
+year,
+artist,
+title,
+videoId
 ){
 
-  const params =
-    new URLSearchParams({
+const params =
+new URLSearchParams({
 
-      v:videoId,
-      t:title,
-      a:artist,
-      j:year
+v:videoId,
+t:title,
+a:artist,
+j:year
 
-    });
+});
 
-  return (
-    PLAYER_BASE +
-    '?' +
-    params.toString()
-  );
+return (
+PLAYER_BASE +
+'?' +
+params.toString()
+);
+
 }
-
 
 /* ============================================================
    FARBWAHL
@@ -948,45 +916,44 @@ function buildPlayerLink(
 
 function buildSwatches(){
 
-  const box =
-    document.getElementById(
-      'swatches'
-    );
+const box =
+document.getElementById(
+'swatches'
+);
 
-  box.innerHTML = '';
+box.innerHTML = '';
 
-  COLORS.forEach(c=>{
+COLORS.forEach(c=>{
 
-    const s =
-      document.createElement('div');
+const s =
+document.createElement('div');
 
-    s.className =
-      'swatch' +
-      (
-        c === selectedColor
-          ? ' selected'
-          : ''
-      );
+s.className =
+'swatch' +
+(
+c === selectedColor
+? ' selected'
+: ''
+);
 
-    s.style.background =
-      c;
+s.style.background =
+c;
 
-    s.onclick = ()=>{
+s.onclick = ()=>{
 
-      selectedColor = c;
+selectedColor = c;
 
-      buildSwatches();
+buildSwatches();
 
-    };
+};
 
-    box.appendChild(s);
+box.appendChild(s);
 
-  });
+});
 
 }
 
 buildSwatches();
-
 
 /* ============================================================
    KARTE HINZUFÜGEN
@@ -994,92 +961,94 @@ buildSwatches();
 
 function addCard(){
 
-  const year =
-    document.getElementById(
-      'f-year'
-    ).value.trim();
+const year =
+document.getElementById(
+'f-year'
+).value.trim();
 
-  const artist =
-    document.getElementById(
-      'f-artist'
-    ).value.trim();
+const artist =
+document.getElementById(
+'f-artist'
+).value.trim();
 
-  const title =
-    document.getElementById(
-      'f-title'
-    ).value.trim();
+const title =
+document.getElementById(
+'f-title'
+).value.trim();
 
-  const youtubeUrl =
-    document.getElementById(
-      'f-link'
-    ).value.trim();
+const youtubeUrl =
+document.getElementById(
+'f-link'
+).value.trim();
 
-  if(
-    !year ||
-    !artist ||
-    !title ||
-    !youtubeUrl
-  ){
+if(
+!year ||
+!artist ||
+!title ||
+!youtubeUrl
+){
 
-    alert(
-      'Bitte Jahr, Interpret, Titel und Link ausfüllen.'
-    );
+alert(
+'Bitte Jahr, Interpret, Titel und Link ausfüllen.'
+);
 
-    return;
-  }
+return;
 
-  const videoId =
-    extractYouTubeId(
-      youtubeUrl
-    );
-
-  if(!videoId){
-
-    alert(
-      'Konnte keine YouTube-Video-ID in diesem Link finden. ' +
-      'Bitte einen normalen YouTube-Link einfügen.'
-    );
-
-    return;
-  }
-
-  const link =
-    buildPlayerLink(
-      year,
-      artist,
-      title,
-      videoId
-    );
-
-  cards.push({
-
-    year:year,
-    artist:artist,
-    title:title,
-    link:link,
-    color:selectedColor
-
-  });
-
-  document.getElementById(
-    'f-year'
-  ).value = '';
-
-  document.getElementById(
-    'f-artist'
-  ).value = '';
-
-  document.getElementById(
-    'f-title'
-  ).value = '';
-
-  document.getElementById(
-    'f-link'
-  ).value = '';
-
-  renderTable();
 }
 
+const videoId =
+extractYouTubeId(
+youtubeUrl
+);
+
+if(!videoId){
+
+alert(
+'Konnte keine YouTube-Video-ID in diesem Link finden. ' +
+'Bitte einen normalen YouTube-Link einfügen.'
+);
+
+return;
+
+}
+
+const link =
+buildPlayerLink(
+year,
+artist,
+title,
+videoId
+);
+
+cards.push({
+
+year:year,
+artist:artist,
+title:title,
+link:link,
+color:selectedColor
+
+});
+
+document.getElementById(
+'f-year'
+).value = '';
+
+document.getElementById(
+'f-artist'
+).value = '';
+
+document.getElementById(
+'f-title'
+).value = '';
+
+document.getElementById(
+'f-link'
+).value = '';
+
+renderTable();
+
+}
 
 /* ============================================================
    KARTE LÖSCHEN
@@ -1087,12 +1056,11 @@ function addCard(){
 
 function removeCard(i){
 
-  cards.splice(i,1);
+cards.splice(i,1);
 
-  renderTable();
+renderTable();
 
 }
-
 
 /* ============================================================
    TABELLE
@@ -1100,83 +1068,85 @@ function removeCard(i){
 
 function renderTable(){
 
-  const body =
-    document.getElementById(
-      'cardTableBody'
-    );
+const body =
+document.getElementById(
+'cardTableBody'
+);
 
-  const empty =
-    document.getElementById(
-      'emptyMsg'
-    );
+const empty =
+document.getElementById(
+'emptyMsg'
+);
 
-  const table =
-    document.getElementById(
-      'cardTable'
-    );
+const table =
+document.getElementById(
+'cardTable'
+);
 
-  body.innerHTML = '';
+body.innerHTML = '';
 
-  if(cards.length === 0){
+if(cards.length === 0){
 
-    table.style.display =
-      'none';
+table.style.display =
+'none';
 
-    empty.style.display =
-      'block';
+empty.style.display =
+'block';
 
-    return;
-  }
-
-  table.style.display =
-    'table';
-
-  empty.style.display =
-    'none';
-
-  cards.forEach((c,i)=>{
-
-    const tr =
-      document.createElement(
-        'tr'
-      );
-
-    tr.innerHTML = `
-
-      <td>${i+1}</td>
-
-      <td>
-        <span
-          class="dot"
-          style="background:${c.color}"
-        ></span>
-      </td>
-
-      <td>${c.year}</td>
-
-      <td>${c.artist}</td>
-
-      <td>${c.title}</td>
-
-      <td>
-
-        <button
-          class="del"
-          onclick="removeCard(${i})"
-        >
-          Entfernen
-        </button>
-
-      </td>
-
-    `;
-
-    body.appendChild(tr);
-
-  });
+return;
 
 }
 
+table.style.display =
+'table';
+
+empty.style.display =
+'none';
+
+cards.forEach((c,i)=>{
+
+const tr =
+document.createElement(
+'tr'
+);
+
+tr.innerHTML = `
+
+<td>${i+1}</td>
+
+<td>
+
+<span
+class="dot"
+style="background:${c.color}"
+></span>
+
+</td>
+
+<td>${c.year}</td>
+
+<td>${c.artist}</td>
+
+<td>${c.title}</td>
+
+<td>
+
+<button
+class="del"
+onclick="removeCard(${i})"
+>
+Entfernen
+</button>
+
+</td>
+
+`;
+
+body.appendChild(tr);
+
+});
+
+}
 
 /* ============================================================
    EXPORT
@@ -1184,46 +1154,45 @@ function renderTable(){
 
 function exportJSON(){
 
-  const blob =
-    new Blob(
+const blob =
+new Blob(
 
-      [
-        JSON.stringify(
-          cards,
-          null,
-          2
-        )
-      ],
+[
+JSON.stringify(
+cards,
+null,
+2
+)
+],
 
-      {
-        type:'application/json'
-      }
-
-    );
-
-  const url =
-    URL.createObjectURL(
-      blob
-    );
-
-  const a =
-    document.createElement(
-      'a'
-    );
-
-  a.href = url;
-
-  a.download =
-    'hitster-karten.json';
-
-  a.click();
-
-  URL.revokeObjectURL(
-    url
-  );
-
+{
+type:'application/json'
 }
 
+);
+
+const url =
+URL.createObjectURL(
+blob
+);
+
+const a =
+document.createElement(
+'a'
+);
+
+a.href = url;
+
+a.download =
+'hitster-karten.json';
+
+a.click();
+
+URL.revokeObjectURL(
+url
+);
+
+}
 
 /* ============================================================
    IMPORT
@@ -1231,50 +1200,50 @@ function exportJSON(){
 
 function importJSON(event){
 
-  const file =
-    event.target.files[0];
+const file =
+event.target.files[0];
 
-  if(!file){
+if(!file){
 
-    return;
-  }
-
-  const reader =
-    new FileReader();
-
-  reader.onload = e=>{
-
-    try{
-
-      const data =
-        JSON.parse(
-          e.target.result
-        );
-
-      if(Array.isArray(data)){
-
-        cards = data;
-
-        renderTable();
-
-      }
-
-    }catch(err){
-
-      alert(
-        'Datei konnte nicht gelesen werden.'
-      );
-
-    }
-
-  };
-
-  reader.readAsText(file);
-
-  event.target.value = '';
+return;
 
 }
 
+const reader =
+new FileReader();
+
+reader.onload = e=>{
+
+try{
+
+const data =
+JSON.parse(
+e.target.result
+);
+
+if(Array.isArray(data)){
+
+cards = data;
+
+renderTable();
+
+}
+
+}catch(err){
+
+alert(
+'Datei konnte nicht gelesen werden.'
+);
+
+}
+
+};
+
+reader.readAsText(file);
+
+event.target.value = '';
+
+}
 
 /* ============================================================
    VORDERSEITEN-POSITION
@@ -1282,38 +1251,39 @@ function importJSON(event){
 
 function getCardPosition(index){
 
-  const row =
-    Math.floor(
-      index / PRINT.columns
-    );
+const row =
+Math.floor(
+index / PRINT.columns
+);
 
-  const col =
-    index %
-    PRINT.columns;
+const col =
+index %
+PRINT.columns;
 
-  const left =
-    PRINT.left +
-    col *
-    (
-      PRINT.cardWidth +
-      PRINT.gapX
-    );
+const left =
+PRINT.left +
+col *
+(
+PRINT.cardWidth +
+PRINT.gapX
+);
 
-  const top =
-    PRINT.top +
-    row *
-    (
-      PRINT.cardHeight +
-      PRINT.gapY
-    );
+const top =
+PRINT.top +
+row *
+(
+PRINT.cardHeight +
+PRINT.gapY
+);
 
-  return {
-    left:left,
-    top:top
-  };
+return {
+
+left:left,
+top:top
+
+};
 
 }
-
 
 /* ============================================================
    RÜCKSEITEN-POSITION
@@ -1321,73 +1291,64 @@ function getCardPosition(index){
 
 function getBackCardPosition(index){
 
-  const row =
-    Math.floor(
-      index / PRINT.columns
-    );
+const row =
+Math.floor(
+index / PRINT.columns
+);
 
-  const col =
-    index %
-    PRINT.columns;
+const col =
+index %
+PRINT.columns;
 
-  /*
-   * Rückseite aktuell exakt auf 0 / 0.
-   *
-   * NICHT verändern.
-   */
+const BACK_OFFSET_X = 0;
+const BACK_OFFSET_Y = 0;
 
-  const BACK_OFFSET_X = 0;
-  const BACK_OFFSET_Y = 0;
+const left =
+PRINT.left +
+col *
+(
+PRINT.cardWidth +
+PRINT.gapX
+) +
+BACK_OFFSET_X;
 
+const top =
+PRINT.pageHeight -
+PRINT.top -
+PRINT.cardHeight -
+row *
+(
+PRINT.cardHeight +
+PRINT.gapY
+) +
+BACK_OFFSET_Y;
 
-  const left =
-    PRINT.left +
-    col *
-    (
-      PRINT.cardWidth +
-      PRINT.gapX
-    ) +
-    BACK_OFFSET_X;
+return {
 
+left:left,
+top:top
 
-  const top =
-    PRINT.pageHeight -
-    PRINT.top -
-    PRINT.cardHeight -
-    row *
-    (
-      PRINT.cardHeight +
-      PRINT.gapY
-    ) +
-    BACK_OFFSET_Y;
-
-
-  return {
-    left:left,
-    top:top
-  };
+};
 
 }
-
 
 /* ============================================================
    KARTE POSITIONIEREN
    ============================================================ */
 
 function positionCell(
-  cell,
-  left,
-  top
+cell,
+left,
+top
 ){
 
-  cell.style.left =
-    left + 'mm';
+cell.style.left =
+left + 'mm';
 
-  cell.style.top =
-    top + 'mm';
+cell.style.top =
+top + 'mm';
 
 }
-
 
 /* ============================================================
    DRUCKBLÄTTER ERZEUGEN
@@ -1395,366 +1356,298 @@ function positionCell(
 
 async function renderPrint(){
 
-  const area =
-    document.getElementById(
-      'printArea'
-    );
+const area =
+document.getElementById(
+'printArea'
+);
 
-  area.innerHTML = '';
+area.innerHTML = '';
 
-  if(cards.length === 0){
+if(cards.length === 0){
 
-    return;
-  }
-
-  const PER_SHEET = 12;
-
-  const sheets =
-    Math.ceil(
-      cards.length /
-      PER_SHEET
-    );
-
-  const qrPromises = [];
-
-
-  for(
-    let s = 0;
-    s < sheets;
-    s++
-  ){
-
-    /*
-     * Karten dieses Blattes
-     */
-
-    const sheetCards =
-      cards.slice(
-        s * PER_SHEET,
-        s * PER_SHEET +
-        PER_SHEET
-      );
-
-
-    /* ========================================================
-       VORDERSEITE
-       ======================================================== */
-
-    const frontSheet =
-      document.createElement(
-        'div'
-      );
-
-    frontSheet.className =
-      'sheet front-sheet';
-
-
-    /*
-     * Alle 12 physischen Positionen
-     */
-
-    for(
-      let i = 0;
-      i < PER_SHEET;
-      i++
-    ){
-
-      const c =
-        sheetCards[i];
-
-      const cell =
-        document.createElement(
-          'div'
-        );
-
-
-      /*
-       * Exakte Vorderseitenposition
-       */
-
-      const pos =
-        getCardPosition(i);
-
-      positionCell(
-        cell,
-        pos.left,
-        pos.top
-      );
-
-
-      /*
-       * Leerer Platz
-       */
-
-      if(!c){
-
-        cell.className =
-          'cell empty-cell';
-
-        frontSheet.appendChild(
-          cell
-        );
-
-        continue;
-      }
-
-
-      cell.className =
-        'cell';
-
-
-      const globalIndex =
-        s * PER_SHEET +
-        i +
-        1;
-
-
-      /*
-       * Vorderseite
-       */
-
-      const face =
-        document.createElement(
-          'div'
-        );
-
-      face.className =
-        'front-face';
-
-
-      /*
-       * Kartennummer
-       */
-
-      const num =
-        document.createElement(
-          'div'
-        );
-
-      num.className =
-        'num';
-
-      num.style.background =
-        c.color;
-
-      num.textContent =
-        globalIndex;
-
-
-      /*
-       * QR-Code
-       */
-
-      const qrBox =
-        document.createElement(
-          'div'
-        );
-
-      qrBox.className =
-        'qr';
-
-
-      const canvas =
-        document.createElement(
-          'canvas'
-        );
-
-
-      qrBox.appendChild(
-        canvas
-      );
-
-
-      face.appendChild(
-        qrBox
-      );
-
-      face.appendChild(
-        num
-      );
-
-
-      cell.appendChild(
-        face
-      );
-
-
-      frontSheet.appendChild(
-        cell
-      );
-
-
-      /*
-       * QR-Code erzeugen
-       */
-
-      qrPromises.push(
-
-        QRCode.toCanvas(
-
-          canvas,
-
-          c.link,
-
-          {
-            margin:1,
-            width:400,
-            errorCorrectionLevel:'M'
-          }
-
-        )
-
-      );
-
-    }
-
-
-    area.appendChild(
-      frontSheet
-    );
-
-
-    /* ========================================================
-       RÜCKSEITE
-       ======================================================== */
-
-    const backSheet =
-      document.createElement(
-        'div'
-      );
-
-    backSheet.className =
-      'sheet back-sheet';
-
-
-    for(
-      let i = 0;
-      i < PER_SHEET;
-      i++
-    ){
-
-      const c =
-        sheetCards[i];
-
-
-      /*
-       * Exakte Rückseitenposition
-       */
-
-      const pos =
-        getBackCardPosition(i);
-
-
-      const cell =
-        document.createElement(
-          'div'
-        );
-
-
-      positionCell(
-        cell,
-        pos.left,
-        pos.top
-      );
-
-
-      /*
-       * Leerer Platz
-       */
-
-      if(!c){
-
-        cell.className =
-          'cell empty-cell';
-
-        backSheet.appendChild(
-          cell
-        );
-
-        continue;
-      }
-
-
-      cell.className =
-        'cell';
-
-
-      const globalIndex =
-        s * PER_SHEET +
-        i +
-        1;
-
-
-      /*
-       * Rückseite
-       */
-
-      const face =
-        document.createElement(
-          'div'
-        );
-
-      face.className =
-        'back-face';
-
-
-      face.style.background =
-        lightenColor(
-          c.color,
-          0.6
-        );
-
-
-      face.innerHTML = `
-
-        <div class="artist">
-          ${c.artist}
-        </div>
-
-        <div class="year">
-          ${c.year}
-        </div>
-
-        <div class="title">
-          ${c.title}
-        </div>
-
-        <div class="idx">
-          #${globalIndex}
-        </div>
-
-      `;
-
-
-      cell.appendChild(
-        face
-      );
-
-
-      backSheet.appendChild(
-        cell
-      );
-
-    }
-
-
-    area.appendChild(
-      backSheet
-    );
-
-  }
-
-
-  /*
-   * Warten bis alle QR-Codes fertig sind.
-   */
-
-  await Promise.all(
-    qrPromises
-  );
+return;
 
 }
 
+const PER_SHEET = 12;
+
+const sheets =
+Math.ceil(
+cards.length /
+PER_SHEET
+);
+
+const qrPromises = [];
+
+for(
+let s = 0;
+s < sheets;
+s++
+){
+
+const sheetCards =
+cards.slice(
+s * PER_SHEET,
+s * PER_SHEET +
+PER_SHEET
+);
+
+/* ========================================================
+   VORDERSEITE
+   ======================================================== */
+
+const frontSheet =
+document.createElement(
+'div'
+);
+
+frontSheet.className =
+'sheet front-sheet';
+
+for(
+let i = 0;
+i < PER_SHEET;
+i++
+){
+
+const c =
+sheetCards[i];
+
+const cell =
+document.createElement(
+'div'
+);
+
+const pos =
+getCardPosition(i);
+
+positionCell(
+cell,
+pos.left,
+pos.top
+);
+
+if(!c){
+
+cell.className =
+'cell empty-cell';
+
+frontSheet.appendChild(
+cell
+);
+
+continue;
+
+}
+
+cell.className =
+'cell';
+
+const globalIndex =
+s * PER_SHEET +
+i +
+1;
+
+/* Vorderseite */
+
+const face =
+document.createElement(
+'div'
+);
+
+face.className =
+'front-face';
+
+/* Kartennummer */
+
+const num =
+document.createElement(
+'div'
+);
+
+num.className =
+'num';
+
+num.style.background =
+c.color;
+
+num.textContent =
+globalIndex;
+
+/* QR */
+
+const qrBox =
+document.createElement(
+'div'
+);
+
+qrBox.className =
+'qr';
+
+const canvas =
+document.createElement(
+'canvas'
+);
+
+qrBox.appendChild(
+canvas
+);
+
+face.appendChild(
+qrBox
+);
+
+face.appendChild(
+num
+);
+
+cell.appendChild(
+face
+);
+
+frontSheet.appendChild(
+cell
+);
+
+/* QR erzeugen */
+
+qrPromises.push(
+
+QRCode.toCanvas(
+
+canvas,
+
+c.link,
+
+{
+margin:1,
+width:400,
+errorCorrectionLevel:'M'
+}
+
+)
+
+);
+
+}
+
+area.appendChild(
+frontSheet
+);
+
+/* ========================================================
+   RÜCKSEITE
+   ======================================================== */
+
+const backSheet =
+document.createElement(
+'div'
+);
+
+backSheet.className =
+'sheet back-sheet';
+
+for(
+let i = 0;
+i < PER_SHEET;
+i++
+){
+
+const c =
+sheetCards[i];
+
+const pos =
+getBackCardPosition(i);
+
+const cell =
+document.createElement(
+'div'
+);
+
+positionCell(
+cell,
+pos.left,
+pos.top
+);
+
+if(!c){
+
+cell.className =
+'cell empty-cell';
+
+backSheet.appendChild(
+cell
+);
+
+continue;
+
+}
+
+cell.className =
+'cell';
+
+const globalIndex =
+s * PER_SHEET +
+i +
+1;
+
+/* Rückseite */
+
+const face =
+document.createElement(
+'div'
+);
+
+face.className =
+'back-face';
+
+face.style.background =
+lightenColor(
+c.color,
+0.6
+);
+
+face.innerHTML = `
+
+<div class="artist">
+${c.artist}
+</div>
+
+<div class="year">
+${c.year}
+</div>
+
+<div class="title">
+${c.title}
+</div>
+
+<div class="idx">
+#${globalIndex}
+</div>
+
+`;
+
+cell.appendChild(
+face
+);
+
+backSheet.appendChild(
+cell
+);
+
+}
+
+area.appendChild(
+backSheet
+);
+
+}
+
+await Promise.all(
+qrPromises
+);
+
+}
 
 /* ============================================================
    DRUCKEN
@@ -1762,51 +1655,50 @@ async function renderPrint(){
 
 function printCards(){
 
-  if(cards.length === 0){
+if(cards.length === 0){
 
-    alert(
-      'Bitte zuerst mindestens eine Karte hinzufügen.'
-    );
+alert(
+'Bitte zuerst mindestens eine Karte hinzufügen.'
+);
 
-    return;
-  }
-
-
-  if(
-    typeof QRCode ===
-    'undefined'
-  ){
-
-    alert(
-      'Die QR-Code-Bibliothek konnte nicht geladen werden. ' +
-      'Bitte Internetverbindung prüfen und die Seite neu laden.'
-    );
-
-    return;
-  }
-
-
-  renderPrint()
-
-    .then(()=>{
-
-      window.print();
-
-    })
-
-    .catch(err=>{
-
-      console.error(err);
-
-      alert(
-        'Beim Erzeugen der QR-Codes ist ein Fehler aufgetreten: ' +
-        err.message
-      );
-
-    });
+return;
 
 }
 
+if(
+typeof QRCode ===
+'undefined'
+){
+
+alert(
+'Die QR-Code-Bibliothek konnte nicht geladen werden. ' +
+'Bitte Internetverbindung prüfen und die Seite neu laden.'
+);
+
+return;
+
+}
+
+renderPrint()
+
+.then(()=>{
+
+window.print();
+
+})
+
+.catch(err=>{
+
+console.error(err);
+
+alert(
+'Beim Erzeugen der QR-Codes ist ein Fehler aufgetreten: ' +
+err.message
+);
+
+});
+
+}
 
 /* ============================================================
    START
