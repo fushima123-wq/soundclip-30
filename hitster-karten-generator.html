@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>LiedScanner Kartengenerator</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
 <style>
   :root{
     --ink:#151417;
@@ -330,7 +330,7 @@
   </div>
 
   <div class="toolbar">
-    <button onclick="renderPrint(); window.print();">🖨 Karten drucken / als PDF speichern</button>
+    <button onclick="renderPrint().then(() =&gt; window.print());">🖨 Karten drucken / als PDF speichern</button>
     <button class="secondary" onclick="exportJSON()">⬇ Liste exportieren</button>
     <label class="file-btn secondary">⬆ Liste importieren
       <input type="file" accept="application/json" onchange="importJSON(event)">
@@ -486,7 +486,7 @@ function importJSON(event){
 
 // Build print sheets: fronts (QR + number) then backs (info), 3x4 grid per A4 sheet,
 // backs mirrored per row so double-sided printing (flip on long edge) lines up.
-function renderPrint(){
+async function renderPrint(){
   const area = document.getElementById('printArea');
   area.innerHTML = '';
   if(cards.length===0) return;
@@ -494,6 +494,7 @@ function renderPrint(){
   const PER_SHEET = 12; // 3 cols x 4 rows
   const COLS = 3;
   const sheets = Math.ceil(cards.length / PER_SHEET);
+  const qrPromises = [];
 
   for(let s=0; s<sheets; s++){
     const sheetCards = cards.slice(s*PER_SHEET, s*PER_SHEET + PER_SHEET);
@@ -513,11 +514,13 @@ function renderPrint(){
       num.textContent = globalIndex;
       const qrBox = document.createElement('div');
       qrBox.className = 'qr';
+      const canvas = document.createElement('canvas');
+      qrBox.appendChild(canvas);
       face.appendChild(qrBox);
       face.appendChild(num);
       cell.appendChild(face);
       frontSheet.appendChild(cell);
-      new QRCode(qrBox, {text: c.link, width: 300, height: 300, correctLevel: QRCode.CorrectLevel.M});
+      qrPromises.push(QRCode.toCanvas(canvas, c.link, { margin: 1, width: 400, errorCorrectionLevel: 'M' }));
     });
     area.appendChild(frontSheet);
 
@@ -551,6 +554,8 @@ function renderPrint(){
     }
     area.appendChild(backSheet);
   }
+
+  await Promise.all(qrPromises);
 }
 
 renderTable();
