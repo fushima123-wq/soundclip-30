@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>LiedScanner Kartengenerator</title>
+<script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+<style>
+  :root{
+    --ink:#151417;
+    --paper:#f6f3ee;
+    --panel:#1d1c20;
+    --accent:#e8483a;
+    --accent2:#2f6f5e;
+    --line:#d9d3c7;
+    --gold:#c9a24b;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:'Helvetica Neue', Arial, sans-serif;
+    background:var(--paper);
+    color:var(--ink);
+  }
+  header{
+    background:var(--panel);
+    color:var(--paper);
+    padding:28px 24px 22px;
+    text-align:center;
+  }
+  header h1{
+    margin:0;
+    font-size:26px;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+  }
+  header p{
+    margin:8px 0 0;
+    color:#b9b6c0;
+    font-size:14px;
+  }
+  .wrap{
+    max-width:980px;
+    margin:0 auto;
+    padding:24px 20px 60px;
+  }
+  .card-form{
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:20px;
+    margin-bottom:28px;
+  }
+  .card-form h2{
+    margin:0 0 14px;
+    font-size:16px;
+    text-transform:uppercase;
+    letter-spacing:0.05em;
+    color:var(--panel);
+  }
+  .grid-form{
+    display:grid;
+    grid-template-columns:2fr 2fr 1fr 3fr;
+    gap:12px;
+  }
+  .grid-form label{
+    display:block;
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:0.04em;
+    color:#777;
+    margin-bottom:4px;
+  }
+  .grid-form input, .grid-form select{
+    width:100%;
+    padding:9px 10px;
+    border:1px solid var(--line);
+    border-radius:6px;
+    font-size:14px;
+  }
+  .swatches{
+    display:flex;
+    gap:6px;
+    margin-top:6px;
+  }
+  .swatch{
+    width:22px;height:22px;border-radius:50%;
+    cursor:pointer;
+    border:2px solid transparent;
+  }
+  .swatch.selected{border-color:var(--panel);}
+  .add-btn{
+    margin-top:14px;
+    background:var(--accent);
+    color:#fff;
+    border:none;
+    padding:11px 20px;
+    border-radius:6px;
+    font-size:14px;
+    font-weight:600;
+    cursor:pointer;
+    letter-spacing:0.03em;
+  }
+  .add-btn:hover{opacity:0.9;}
+  .toolbar{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    margin-bottom:20px;
+  }
+  .toolbar button, .toolbar label.file-btn{
+    background:var(--panel);
+    color:#fff;
+    border:none;
+    padding:9px 16px;
+    border-radius:6px;
+    font-size:13px;
+    cursor:pointer;
+  }
+  .toolbar button.secondary{
+    background:#fff;
+    color:var(--panel);
+    border:1px solid var(--line);
+  }
+  .toolbar input[type=file]{display:none;}
+  table.list{
+    width:100%;
+    border-collapse:collapse;
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:10px;
+    overflow:hidden;
+  }
+  table.list th{
+    text-align:left;
+    background:#efeae0;
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:0.04em;
+    padding:10px 12px;
+    color:#666;
+  }
+  table.list td{
+    padding:10px 12px;
+    border-top:1px solid var(--line);
+    font-size:14px;
+  }
+  table.list .del{
+    color:var(--accent);
+    cursor:pointer;
+    font-size:13px;
+    background:none;
+    border:none;
+  }
+  .dot{
+    width:14px;height:14px;border-radius:50%;display:inline-block;
+  }
+  .empty{
+    padding:30px;
+    text-align:center;
+    color:#999;
+    font-size:14px;
+    background:#fff;
+    border:1px dashed var(--line);
+    border-radius:10px;
+  }
+  .hint{
+    font-size:12.5px;
+    color:#777;
+    margin-top:8px;
+    line-height:1.5;
+  }
+
+  /* PRINT SHEETS */
+  #printArea{display:none;}
+  .sheet{
+    width:210mm;
+    height:294mm;
+    margin:0 auto 14px;
+    background:#fff;
+    display:grid;
+    grid-template-columns:repeat(3, 65mm);
+    grid-auto-rows:65mm;
+    justify-content:center;
+    align-content:start;
+    gap:3mm;
+    padding:8mm 0;
+    overflow:hidden;
+  }
+  .sheet.back-sheet{
+    padding-top:4mm;
+  }
+  .cell{
+    width:65mm;
+    height:65mm;
+    position:relative;
+    border:0.3mm dashed #bbb;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    overflow:hidden;
+  }
+  .cell.empty-cell{border:none;}
+  .front-face{
+    width:100%;height:100%;
+    background-color:#101014;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Ccircle cx='100' cy='100' r='94' fill='none' stroke='%232b8cff' stroke-width='2.2' stroke-linecap='round' stroke-dasharray='95 35 55 25' transform='rotate(10 100 100)'/%3E%3Ccircle cx='100' cy='100' r='83' fill='none' stroke='%23ff3d81' stroke-width='2.2' stroke-linecap='round' stroke-dasharray='80 32 44 20' transform='rotate(140 100 100)'/%3E%3Ccircle cx='100' cy='100' r='72' fill='none' stroke='%23ffd23d' stroke-width='2.2' stroke-linecap='round' stroke-dasharray='68 28 38 18' transform='rotate(250 100 100)'/%3E%3Ccircle cx='100' cy='100' r='61' fill='none' stroke='%2300c2a8' stroke-width='2.2' stroke-linecap='round' stroke-dasharray='58 24 32 16' transform='rotate(320 100 100)'/%3E%3Ccircle cx='100' cy='100' r='50' fill='none' stroke='%23ff8a3d' stroke-width='2.2' stroke-linecap='round' stroke-dasharray='48 20 28 14' transform='rotate(60 100 100)'/%3E%3Ccircle cx='100' cy='100' r='39' fill='none' stroke='%239b59f6' stroke-width='2.2' stroke-linecap='round' stroke-dasharray='38 16 22 11' transform='rotate(200 100 100)'/%3E%3Ccircle cx='100' cy='100' r='28' fill='none' stroke='%23ff5252' stroke-width='2.2' stroke-linecap='round' stroke-dasharray='28 12 16 8' transform='rotate(100 100 100)'/%3E%3C/svg%3E");
+    background-size:cover;
+    background-position:center;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    position:relative;
+    overflow:hidden;
+    -webkit-print-color-adjust:exact;
+    print-color-adjust:exact;
+    color-adjust:exact;
+  }
+  .front-face .qr{
+    width:25mm;
+    height:25mm;
+    position:relative;
+    z-index:2;
+    line-height:0;
+  }
+  .front-face .qr img,
+  .front-face .qr canvas{
+    width:25mm !important;
+    height:25mm !important;
+    display:block;
+  }
+  .front-face .num{
+    position:absolute;
+    top:2.5mm;left:2.5mm;
+    width:5mm;height:5mm;
+    border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    color:#fff;
+    font-size:7px;
+    font-weight:600;
+    font-family:Arial, sans-serif;
+    z-index:2;
+    opacity:0.7;
+    -webkit-print-color-adjust:exact;
+    print-color-adjust:exact;
+    color-adjust:exact;
+  }
+  .back-face{
+    width:100%;height:100%;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    padding:6mm;
+    position:relative;
+    -webkit-print-color-adjust:exact;
+    print-color-adjust:exact;
+    color-adjust:exact;
+  }
+  .back-face .artist{
+    font-size:4mm;
+    font-weight:600;
+    letter-spacing:0.01em;
+    color:var(--ink);
+  }
+  .back-face .year{
+    font-size:14mm;
+    font-weight:800;
+    letter-spacing:0.01em;
+    color:var(--ink);
+    margin-top:11mm;
+    margin-bottom:13mm;
+    line-height:1;
+  }
+  .back-face .title{
+    font-size:4mm;
+    font-style:italic;
+    color:var(--ink);
+    opacity:0.9;
+  }
+  .back-face .idx{
+    position:absolute;
+    bottom:2.5mm; right:3mm;
+    font-size:7px;
+    color:rgba(0,0,0,0.35);
+    font-family:Arial, sans-serif;
+  }
+
+  @page{
+    size: A4;
+    margin: 0;
+  }
+  @media print{
+    header, .wrap > *:not(#printArea){display:none !important;}
+    #printArea{display:block;}
+    .sheet{page-break-after:always; margin:0;}
+    .sheet:last-child{page-break-after:auto;}
+    body{background:#fff; margin:0;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>LiedScanner Kartengenerator</h1>
+  <p>Eigene Songs eintragen &rarr; echten QR-Code erzeugen &rarr; als Karten ausdrucken</p>
+</header>
+
+<div class="wrap">
+
+  <div class="card-form">
+    <h2>Neue Karte</h2>
+    <div class="grid-form">
+      <div>
+        <label>Jahr</label>
+        <input type="text" id="f-year" placeholder="1987">
+      </div>
+      <div>
+        <label>Interpret</label>
+        <input type="text" id="f-artist" placeholder="Depeche Mode">
+      </div>
+      <div>
+        <label>Kategorie-Farbe</label>
+        <div class="swatches" id="swatches"></div>
+      </div>
+      <div>
+        <label>Songtitel</label>
+        <input type="text" id="f-title" placeholder="Never Let Me Down Again">
+      </div>
+    </div>
+    <div class="grid-form" style="grid-template-columns:1fr; margin-top:12px;">
+      <div>
+        <label>YouTube-Link zum Song</label>
+        <input type="text" id="f-link" placeholder="https://www.youtube.com/watch?v=...">
+      </div>
+    </div>
+    <button class="add-btn" onclick="addCard()">+ Karte hinzufügen</button>
+    <div class="hint">Der QR-Code führt automatisch zu deinem eigenen 30-Sekunden-Player: <span id="playerBaseDisplay"></span></div>
+  </div>
+
+  <div class="toolbar">
+    <button onclick="printCards();">🖨 Karten drucken / als PDF speichern</button>
+    <button class="secondary" onclick="exportJSON()">⬇ Liste exportieren</button>
+    <label class="file-btn secondary">⬆ Liste importieren
+      <input type="file" accept="application/json" onchange="importJSON(event)">
+    </label>
+  </div>
+
+  <table class="list" id="cardTable">
+    <thead>
+      <tr><th>#</th><th>Farbe</th><th>Jahr</th><th>Interpret</th><th>Titel</th><th></th></tr>
+    </thead>
+    <tbody id="cardTableBody"></tbody>
+  </table>
+  <div class="empty" id="emptyMsg">Noch keine Karten angelegt.</div>
+
+  <div id="printArea"></div>
+
+</div>
+
+<script>
+const COLORS = ['#e8483a','#2f6f5e','#c9a24b','#3d5a99','#8a4b9e','#2b8c8c','#c76b2a','#555555'];
+const PLAYER_BASE = 'https://fushima123-wq.github.io/soundclip-30/player.html';
+document.getElementById('playerBaseDisplay').textContent = PLAYER_BASE;
+let cards = [];
+let selectedColor = COLORS[0];
+
+function extractYouTubeId(url){
+  const patterns = [
+    /(?:youtube\.com\/watch\?v=)([\w-]{11})/,
+    /(?:youtu\.be\/)([\w-]{11})/,
+    /(?:youtube\.com\/shorts\/)([\w-]{11})/,
+    /(?:youtube\.com\/embed\/)([\w-]{11})/
+  ];
+  for(const p of patterns){
+    const m = url.match(p);
+    if(m) return m[1];
+  }
+  return null;
+}
+
+function lightenColor(hex, percent){
+  hex = hex.replace('#','');
+  const r = parseInt(hex.substring(0,2),16);
+  const g = parseInt(hex.substring(2,4),16);
+  const b = parseInt(hex.substring(4,6),16);
+  const nr = Math.round(r + (255-r)*percent);
+  const ng = Math.round(g + (255-g)*percent);
+  const nb = Math.round(b + (255-b)*percent);
+  return `rgb(${nr},${ng},${nb})`;
+}
+
+function ringBackground(hex){
+  return `repeating-radial-gradient(circle, ${hex} 0mm, ${hex} 4mm, #101014 4mm, #101014 8mm)`;
+}
+
+function buildPlayerLink(year, artist, title, videoId){
+  const params = new URLSearchParams({v: videoId, t: title, a: artist, j: year});
+  return PLAYER_BASE + '?' + params.toString();
+}
+
+function buildSwatches(){
+  const box = document.getElementById('swatches');
+  box.innerHTML = '';
+  COLORS.forEach(c=>{
+    const s = document.createElement('div');
+    s.className = 'swatch' + (c===selectedColor ? ' selected':'');
+    s.style.background = c;
+    s.onclick = ()=>{ selectedColor = c; buildSwatches(); };
+    box.appendChild(s);
+  });
+}
+buildSwatches();
+
+function addCard(){
+  const year = document.getElementById('f-year').value.trim();
+  const artist = document.getElementById('f-artist').value.trim();
+  const title = document.getElementById('f-title').value.trim();
+  const youtubeUrl = document.getElementById('f-link').value.trim();
+  if(!year || !artist || !title || !youtubeUrl){
+    alert('Bitte Jahr, Interpret, Titel und Link ausfüllen.');
+    return;
+  }
+  const videoId = extractYouTubeId(youtubeUrl);
+  if(!videoId){
+    alert('Konnte keine YouTube-Video-ID in diesem Link finden. Bitte einen normalen YouTube-Link einfügen (z. B. https://www.youtube.com/watch?v=...).');
+    return;
+  }
+  const link = buildPlayerLink(year, artist, title, videoId);
+  cards.push({year, artist, title, link, color: selectedColor});
+  document.getElementById('f-year').value='';
+  document.getElementById('f-artist').value='';
+  document.getElementById('f-title').value='';
+  document.getElementById('f-link').value='';
+  renderTable();
+}
+
+function removeCard(i){
+  cards.splice(i,1);
+  renderTable();
+}
+
+function renderTable(){
+  const body = document.getElementById('cardTableBody');
+  const empty = document.getElementById('emptyMsg');
+  const table = document.getElementById('cardTable');
+  body.innerHTML = '';
+  if(cards.length===0){
+    table.style.display='none';
+    empty.style.display='block';
+    return;
+  }
+  table.style.display='table';
+  empty.style.display='none';
+  cards.forEach((c,i)=>{
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${i+1}</td>
+      <td><span class="dot" style="background:${c.color}"></span></td>
+      <td>${c.year}</td>
+      <td>${c.artist}</td>
+      <td>${c.title}</td>
+      <td><button class="del" onclick="removeCard(${i})">Entfernen</button></td>`;
+    body.appendChild(tr);
+  });
+}
+
+function exportJSON(){
+  const blob = new Blob([JSON.stringify(cards, null, 2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'hitster-karten.json';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function importJSON(event){
+  const file = event.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = e=>{
+    try{
+      const data = JSON.parse(e.target.result);
+      if(Array.isArray(data)){
+        cards = data;
+        renderTable();
+      }
+    }catch(err){
+      alert('Datei konnte nicht gelesen werden.');
+    }
+  };
+  reader.readAsText(file);
+  event.target.value = '';
+}
+
+// Build print sheets: fronts (QR + number) then backs (info), 3x4 grid per A4 sheet,
+// backs mirrored per row so double-sided printing (flip on long edge) lines up.
+async function renderPrint(){
+  const area = document.getElementById('printArea');
+  area.innerHTML = '';
+  if(cards.length===0) return;
+
+  const PER_SHEET = 12; // 3 cols x 4 rows
+  const COLS = 3;
+  const sheets = Math.ceil(cards.length / PER_SHEET);
+  const qrPromises = [];
+
+  for(let s=0; s<sheets; s++){
+    const sheetCards = cards.slice(s*PER_SHEET, s*PER_SHEET + PER_SHEET);
+
+    // FRONT sheet
+    const frontSheet = document.createElement('div');
+    frontSheet.className = 'sheet';
+    sheetCards.forEach((c, idx)=>{
+      const globalIndex = s*PER_SHEET + idx + 1;
+      const cell = document.createElement('div');
+      cell.className = 'cell';
+      const face = document.createElement('div');
+      face.className = 'front-face';
+      const num = document.createElement('div');
+      num.className = 'num';
+      num.style.background = c.color;
+      num.textContent = globalIndex;
+      const qrBox = document.createElement('div');
+      qrBox.className = 'qr';
+      const canvas = document.createElement('canvas');
+      qrBox.appendChild(canvas);
+      face.appendChild(qrBox);
+      face.appendChild(num);
+      cell.appendChild(face);
+      frontSheet.appendChild(cell);
+      qrPromises.push(QRCode.toCanvas(canvas, c.link, { margin: 1, width: 400, errorCorrectionLevel: 'M' }));
+    });
+    area.appendChild(frontSheet);
+
+    // BACK sheet - Zeilenreihenfolge umgedreht (für "kurze Seite kippen" beim Duplexdruck),
+    // Spalten (links/rechts) bleiben dabei unverändert wie auf der Vorderseite.
+    const backSheet = document.createElement('div');
+    backSheet.className = 'sheet back-sheet';
+    const rows = Math.ceil(sheetCards.length / COLS);
+    for(let r=rows-1; r>=0; r--){
+      const rowCards = sheetCards.slice(r*COLS, r*COLS+COLS);
+      while(rowCards.length < COLS) rowCards.push(null);
+      rowCards.forEach((c, idxInRow)=>{
+        const cell = document.createElement('div');
+        if(c===null){
+          cell.className = 'cell empty-cell';
+        } else {
+          const originalIdx = sheetCards.indexOf(c);
+          const globalIndex = s*PER_SHEET + originalIdx + 1;
+          cell.className = 'cell';
+          const face = document.createElement('div');
+          face.className = 'back-face';
+          face.style.background = lightenColor(c.color, 0.6);
+          face.innerHTML = `
+            <div class="artist">${c.artist}</div>
+            <div class="year">${c.year}</div>
+            <div class="title">${c.title}</div>
+            <div class="idx">#${globalIndex}</div>`;
+          cell.appendChild(face);
+        }
+        backSheet.appendChild(cell);
+      });
+    }
+    area.appendChild(backSheet);
+  }
+
+  await Promise.all(qrPromises);
+}
+
+function printCards(){
+  if(cards.length === 0){
+    alert('Bitte zuerst mindestens eine Karte hinzufügen.');
+    return;
+  }
+  if(typeof QRCode === 'undefined'){
+    alert('Die QR-Code-Bibliothek konnte nicht geladen werden. Bitte Internetverbindung prüfen und die Seite neu laden.');
+    return;
+  }
+  renderPrint().then(() => {
+    window.print();
+  }).catch(err => {
+    console.error(err);
+    alert('Beim Erzeugen der QR-Codes ist ein Fehler aufgetreten: ' + err.message);
+  });
+}
+
+renderTable();
+</script>
+</body>
+</html>
