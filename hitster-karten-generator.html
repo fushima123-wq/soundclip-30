@@ -1253,14 +1253,13 @@ function getCardPosition(index){
       PRINT.gapX
     );
 
-const top =
-  PRINT.top +
-
-  (
-    PRINT.cardHeight +
-    PRINT.gapY
-  ) -
-  8;
+  const top =
+    PRINT.top +
+    row *
+    (
+      PRINT.cardHeight +
+      PRINT.gapY
+    );
 
   return {
     left:left,
@@ -1308,6 +1307,57 @@ const top =
  *
  * ============================================================
  */
+
+function getBackCardPosition(index){
+
+  const row =
+    Math.floor(
+      index / PRINT.columns
+    );
+
+  const col =
+    index %
+    PRINT.columns;
+
+  /*
+   * Y-Achse spiegeln
+   */
+
+  const mirroredRow =
+    PRINT.rows -
+    1 -
+    row;
+
+  /*
+   * X bleibt identisch
+   */
+
+  const left =
+    PRINT.left +
+    col *
+    (
+      PRINT.cardWidth +
+      PRINT.gapX
+    );
+
+  /*
+   * Gespiegelte Y-Position
+   */
+
+  const top =
+    PRINT.top +
+    mirroredRow *
+    (
+      PRINT.cardHeight +
+      PRINT.gapY
+    );
+
+  return {
+    left:left,
+    top:top
+  };
+
+}
 
 
 /* ============================================================
