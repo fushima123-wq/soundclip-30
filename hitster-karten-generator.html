@@ -536,35 +536,44 @@ async function renderPrint(){
     // BACK sheet - Zeilenreihenfolge umgedreht (für "kurze Seite kippen" beim Duplexdruck),
     // Spalten (links/rechts) bleiben dabei unverändert wie auf der Vorderseite.
     const backSheet = document.createElement('div');
-    backSheet.className = 'sheet back-sheet';
-    const rows = Math.ceil(sheetCards.length / COLS);
-    for(let r=rows-1; r>=0; r--){
-      const rowCards = sheetCards.slice(r*COLS, r*COLS+COLS);
-      while(rowCards.length < COLS) rowCards.push(null);
-      rowCards.forEach((c, idxInRow)=>{
-        const cell = document.createElement('div');
-        if(c===null){
-          cell.className = 'cell empty-cell';
-        } else {
-          const originalIdx = sheetCards.indexOf(c);
-          const globalIndex = s*PER_SHEET + originalIdx + 1;
-          cell.className = 'cell';
-          const face = document.createElement('div');
-          face.className = 'back-face';
-          face.style.background = lightenColor(c.color, 0.6);
-          face.innerHTML = `
-            <div class="artist">${c.artist}</div>
-            <div class="year">${c.year}</div>
-            <div class="title">${c.title}</div>
-            <div class="idx">#${globalIndex}</div>`;
-          cell.appendChild(face);
-        }
-        backSheet.appendChild(cell);
-      });
-    }
-    area.appendChild(backSheet);
-  }
+backSheet.className = 'sheet back-sheet';
 
+const COLS = 3;
+const ROWS = 4;
+
+for(let row = 0; row < ROWS; row++){
+  for(let col = COLS - 1; col >= 0; col--){
+    const index = row * COLS + col;
+    const cell = document.createElement('div');
+
+    if(index >= sheetCards.length){
+      cell.className = 'cell empty-cell';
+      backSheet.appendChild(cell);
+      continue;
+    }
+
+    const c = sheetCards[index];
+    const globalIndex = s * PER_SHEET + index + 1;
+
+    cell.className = 'cell';
+
+    const face = document.createElement('div');
+    face.className = 'back-face';
+    face.style.background = lightenColor(c.color, 0.6);
+
+    face.innerHTML = `
+      <div class="artist">${c.artist}</div>
+      <div class="year">${c.year}</div>
+      <div class="title">${c.title}</div>
+      <div class="idx">#${globalIndex}</div>
+    `;
+
+    cell.appendChild(face);
+    backSheet.appendChild(cell);
+  }
+}
+
+area.appendChild(backSheet);
   await Promise.all(qrPromises);
 }
 
