@@ -1320,11 +1320,22 @@ function getBackCardPosition(index){
     PRINT.columns;
 
   /*
-   * X bleibt exakt gleich.
+   * RÜCKSEITE FEINJUSTIERUNG
    *
-   * Die Rückseite wird nur auf der Y-Achse
-   * anhand der kompletten A4-Seite gespiegelt.
+   * Gemessene Abweichung beim Ausdruck:
+   *
+   *   1 mm zu weit rechts
+   *   3 mm zu weit unten
+   *
+   * Deshalb:
+   *
+   *   X = 1 mm nach links
+   *   Y = 3 mm nach oben
    */
+
+  const BACK_OFFSET_X = -1;
+  const BACK_OFFSET_Y = -3;
+
 
   const left =
     PRINT.left +
@@ -1332,21 +1343,9 @@ function getBackCardPosition(index){
     (
       PRINT.cardWidth +
       PRINT.gapX
-    );
+    ) +
+    BACK_OFFSET_X;
 
-  /*
-   * Echte Spiegelung an der horizontalen
-   * Mitte des A4-Blattes.
-   *
-   * Vorderseite:
-   *   oberer Rand = PRINT.top
-   *
-   * Rückseite:
-   *   unterer Rand = PRINT.top
-   *
-   * Dadurch bleibt die Karte beim Wenden
-   * exakt hinter ihrer Vorderseite.
-   */
 
   const top =
     PRINT.pageHeight -
@@ -1356,7 +1355,9 @@ function getBackCardPosition(index){
     (
       PRINT.cardHeight +
       PRINT.gapY
-    );
+    ) +
+    BACK_OFFSET_Y;
+
 
   return {
     left:left,
@@ -1364,7 +1365,6 @@ function getBackCardPosition(index){
   };
 
 }
-
 /* ============================================================
    KARTE POSITIONIEREN
    ============================================================ */
