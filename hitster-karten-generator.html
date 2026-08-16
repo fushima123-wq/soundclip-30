@@ -1320,11 +1320,15 @@ function getBackCardPosition(index){
     PRINT.columns;
 
   /*
-   * X bleibt exakt gleich.
+   * Korrektur für den realen Duplexdruck:
    *
-   * Die Rückseite wird nur auf der Y-Achse
-   * anhand der kompletten A4-Seite gespiegelt.
+   * 1 mm nach links
+   * 3 mm nach oben
    */
+
+  const BACK_OFFSET_X = -1;
+  const BACK_OFFSET_Y = -3;
+
 
   const left =
     PRINT.left +
@@ -1332,31 +1336,25 @@ function getBackCardPosition(index){
     (
       PRINT.cardWidth +
       PRINT.gapX
-    );
+    ) +
+    BACK_OFFSET_X;
 
-  /*
-   * Echte Spiegelung an der horizontalen
-   * Mitte des A4-Blattes.
-   *
-   * Vorderseite:
-   *   oberer Rand = PRINT.top
-   *
-   * Rückseite:
-   *   unterer Rand = PRINT.top
-   *
-   * Dadurch bleibt die Karte beim Wenden
-   * exakt hinter ihrer Vorderseite.
-   */
+
+  const mirroredRow =
+    PRINT.rows -
+    1 -
+    row;
+
 
   const top =
-    PRINT.pageHeight -
-    PRINT.top -
-    PRINT.cardHeight -
-    row *
+    PRINT.top +
+    mirroredRow *
     (
       PRINT.cardHeight +
       PRINT.gapY
-    );
+    ) +
+    BACK_OFFSET_Y;
+
 
   return {
     left:left,
