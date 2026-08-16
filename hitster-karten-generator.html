@@ -186,6 +186,12 @@
     padding:8mm 0;
     overflow:hidden;
   }
+  /* Hier kannst du die Rückseite separat verschieben, falls dein Drucker
+     einen festen Versatz hat. Einfach die Werte anpassen (0mm = kein Unterschied zur Vorderseite). */
+  .sheet.back-sheet{
+    padding-top:8mm;    /* Abstand oben auf der Rückseite */
+    padding-left:0mm;   /* zusätzlicher Abstand links auf der Rückseite */
+  }
 
   .cell{
     width:65mm;
@@ -533,7 +539,7 @@ async function renderPrint(){
 
     // BACK sheet - Spalten pro Zeile gespiegelt (für "lange Seite kippen" beim Duplexdruck)
     const backSheet = document.createElement('div');
-    backSheet.className = 'sheet';
+    backSheet.className = 'sheet back-sheet';
     const rows = Math.ceil(sheetCards.length / COLS);
     for(let r=0; r<rows; r++){
       const rowCards = sheetCards.slice(r*COLS, r*COLS+COLS);
