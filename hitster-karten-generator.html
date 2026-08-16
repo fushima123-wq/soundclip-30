@@ -355,32 +355,19 @@ table.list .del{
    NUMMER
    ========================================================== */
 
-.front-face .num{
+.front-face .idx{
   position:absolute;
 
-  top:2.5mm;
-  left:2.5mm;
-
-  width:5mm;
-  height:5mm;
-
-  border-radius:50%;
-
-  display:flex;
-
-  align-items:center;
-  justify-content:center;
-
-  color:#fff;
+  bottom:2.5mm;
+  right:3mm;
 
   font-size:7px;
-  font-weight:600;
+
+  color:rgba(255,255,255,0.6);
 
   font-family:Arial,sans-serif;
 
   z-index:3;
-
-  opacity:0.7;
 
   -webkit-print-color-adjust:exact;
   print-color-adjust:exact;
@@ -1477,19 +1464,16 @@ async function renderPrint(){
          ZAHL
          ====================================================== */
 
-      const num =
+      const idxFront =
         document.createElement(
           'div'
         );
 
-      num.className =
-        'num';
+      idxFront.className =
+        'idx';
 
-      num.style.background =
-        c.color;
-
-      num.textContent =
-        globalIndex;
+      idxFront.textContent =
+        '#' + globalIndex;
 
 
       /* ======================================================
@@ -1521,7 +1505,7 @@ async function renderPrint(){
       );
 
       face.appendChild(
-        num
+        idxFront
       );
 
 
