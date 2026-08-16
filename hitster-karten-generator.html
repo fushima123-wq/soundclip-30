@@ -1320,15 +1320,8 @@ function getBackCardPosition(index){
     PRINT.columns;
 
   /*
-   * Korrektur für den realen Duplexdruck:
-   *
-   * 1 mm nach links
-   * 3 mm nach oben
+   * X bleibt exakt gleich.
    */
-
-  const BACK_OFFSET_X = -1;
-  const BACK_OFFSET_Y = -3;
-
 
   const left =
     PRINT.left +
@@ -1336,15 +1329,18 @@ function getBackCardPosition(index){
     (
       PRINT.cardWidth +
       PRINT.gapX
-    ) +
-    BACK_OFFSET_X;
+    );
 
+  /*
+   * Die Reihenfolge wird gespiegelt,
+   * aber der äußere Rand bleibt exakt
+   * gleich wie auf der Vorderseite.
+   */
 
   const mirroredRow =
     PRINT.rows -
     1 -
     row;
-
 
   const top =
     PRINT.top +
@@ -1352,9 +1348,7 @@ function getBackCardPosition(index){
     (
       PRINT.cardHeight +
       PRINT.gapY
-    ) +
-    BACK_OFFSET_Y;
-
+    );
 
   return {
     left:left,
