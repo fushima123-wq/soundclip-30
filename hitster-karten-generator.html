@@ -1514,17 +1514,17 @@ cell
 qrPromises.push(
 
 QRCode.toCanvas(
-
-canvas,
-
-c.link,
-
-{
-margin:1,
-width:400,
-errorCorrectionLevel:'M'
-}
-
+  canvas,
+  c.link,
+  {
+    margin:1,
+    width:400,
+    errorCorrectionLevel:'M',
+    color:{
+      dark:'#ffffff',
+      light:'#101014'
+    }
+  }
 )
 
 );
