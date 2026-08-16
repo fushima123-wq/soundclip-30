@@ -330,7 +330,7 @@
   </div>
 
   <div class="toolbar">
-    <button onclick="renderPrint().then(() =&gt; window.print());">🖨 Karten drucken / als PDF speichern</button>
+    <button onclick="printCards();">🖨 Karten drucken / als PDF speichern</button>
     <button class="secondary" onclick="exportJSON()">⬇ Liste exportieren</button>
     <label class="file-btn secondary">⬆ Liste importieren
       <input type="file" accept="application/json" onchange="importJSON(event)">
@@ -556,6 +556,23 @@ async function renderPrint(){
   }
 
   await Promise.all(qrPromises);
+}
+
+function printCards(){
+  if(cards.length === 0){
+    alert('Bitte zuerst mindestens eine Karte hinzufügen.');
+    return;
+  }
+  if(typeof QRCode === 'undefined'){
+    alert('Die QR-Code-Bibliothek konnte nicht geladen werden. Bitte Internetverbindung prüfen und die Seite neu laden.');
+    return;
+  }
+  renderPrint().then(() => {
+    window.print();
+  }).catch(err => {
+    console.error(err);
+    alert('Beim Erzeugen der QR-Codes ist ein Fehler aufgetreten: ' + err.message);
+  });
 }
 
 renderTable();
