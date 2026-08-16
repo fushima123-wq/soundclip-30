@@ -301,9 +301,11 @@ table.list .del{
 }
 
 /*
- * Schwarzer Bereich wird etwas größer gemacht,
- * damit beim Ausschneiden kleine Ungenauigkeiten
- * nicht auffallen.
+ * Schwarzer Bereich:
+ * 1 mm Überstand rundherum.
+ *
+ * Die eigentliche Karte bleibt 69 x 69 mm.
+ * Nur der schwarze Hintergrund ist etwas größer.
  */
 
 .front-face::before{
@@ -311,11 +313,11 @@ table.list .del{
 
   position:absolute;
 
-  left:-1.5mm;
-  top:-1.5mm;
+  left:-1mm;
+  top:-1mm;
 
-  width:72mm;
-  height:72mm;
+  width:71mm;
+  height:71mm;
 
   background:#101014;
 
@@ -759,24 +761,17 @@ const PRINT = {
   pageWidth:210,
   pageHeight:297,
 
-  /*
-   * NEUE KARTENGRÖSSE
-   */
+  /* Kartengröße */
 
   cardWidth:69,
   cardHeight:69,
 
-  /*
-   * Sehr kleiner Abstand zwischen
-   * den Karten.
-   */
+  /* Abstand zwischen den Karten */
 
   gapX:0.5,
   gapY:0.5,
 
-  /*
-   * Oberer Rand.
-   */
+  /* Abstand oben */
 
   top:8,
 
@@ -787,28 +782,18 @@ const PRINT = {
 
 
 /*
- * Gesamtbreite:
+ * WICHTIG:
  *
- * 69 + 0.5 + 69 + 0.5 + 69
+ * Die Position wird bewusst fest auf 1 mm gesetzt.
  *
- * = 208 mm
+ * Damit liegen bei 69-mm-Karten und 0,5-mm-Abstand:
  *
- * A4 = 210 mm
+ * 1 mm | 69 | 0,5 | 69 | 0,5 | 69 | 1 mm
  *
- * verbleiben 2 mm
- *
- * links = 1 mm
- * rechts = 1 mm
+ * exakt auf A4.
  */
 
-PRINT.left =
-(
-  PRINT.pageWidth -
-  (
-    PRINT.columns * PRINT.cardWidth +
-    (PRINT.columns - 1) * PRINT.gapX
-  )
-) / 2;
+PRINT.left = 1;
 
 
 /* ============================================================
@@ -817,32 +802,31 @@ PRINT.left =
 
 function extractYouTubeId(url){
 
-const patterns = [
+  const patterns = [
 
-/(?:youtube\.com\/watch\?v=)([\w-]{11})/,
+    /(?:youtube\.com\/watch\?v=)([\w-]{11})/,
 
-/(?:youtu\.be\/)([\w-]{11})/,
+    /(?:youtu\.be\/)([\w-]{11})/,
 
-/(?:youtube\.com\/shorts\/)([\w-]{11})/,
+    /(?:youtube\.com\/shorts\/)([\w-]{11})/,
 
-/(?:youtube\.com\/embed\/)([\w-]{11})/
+    /(?:youtube\.com\/embed\/)([\w-]{11})/
 
-];
+  ];
 
-for(const p of patterns){
+  for(const p of patterns){
 
-const m = url.match(p);
+    const m = url.match(p);
 
-if(m){
+    if(m){
 
-return m[1];
+      return m[1];
 
-}
+    }
 
-}
+  }
 
-return null;
-
+  return null;
 }
 
 
@@ -852,44 +836,43 @@ return null;
 
 function lightenColor(hex,percent){
 
-hex =
-hex.replace('#','');
+  hex =
+    hex.replace('#','');
 
-const r =
-parseInt(
-hex.substring(0,2),
-16
-);
+  const r =
+    parseInt(
+      hex.substring(0,2),
+      16
+    );
 
-const g =
-parseInt(
-hex.substring(2,4),
-16
-);
+  const g =
+    parseInt(
+      hex.substring(2,4),
+      16
+    );
 
-const b =
-parseInt(
-hex.substring(4,6),
-16
-);
+  const b =
+    parseInt(
+      hex.substring(4,6),
+      16
+    );
 
-const nr =
-Math.round(
-r + (255-r)*percent
-);
+  const nr =
+    Math.round(
+      r + (255-r)*percent
+    );
 
-const ng =
-Math.round(
-g + (255-g)*percent
-);
+  const ng =
+    Math.round(
+      g + (255-g)*percent
+    );
 
-const nb =
-Math.round(
-b + (255-b)*percent
-);
+  const nb =
+    Math.round(
+      b + (255-b)*percent
+    );
 
-return `rgb(${nr},${ng},${nb})`;
-
+  return `rgb(${nr},${ng},${nb})`;
 }
 
 
@@ -898,28 +881,27 @@ return `rgb(${nr},${ng},${nb})`;
    ============================================================ */
 
 function buildPlayerLink(
-year,
-artist,
-title,
-videoId
+  year,
+  artist,
+  title,
+  videoId
 ){
 
-const params =
-new URLSearchParams({
+  const params =
+    new URLSearchParams({
 
-v:videoId,
-t:title,
-a:artist,
-j:year
+      v:videoId,
+      t:title,
+      a:artist,
+      j:year
 
-});
+    });
 
-return (
-PLAYER_BASE +
-'?' +
-params.toString()
-);
-
+  return (
+    PLAYER_BASE +
+    '?' +
+    params.toString()
+  );
 }
 
 
@@ -929,40 +911,40 @@ params.toString()
 
 function buildSwatches(){
 
-const box =
-document.getElementById(
-'swatches'
-);
+  const box =
+    document.getElementById(
+      'swatches'
+    );
 
-box.innerHTML = '';
+  box.innerHTML = '';
 
-COLORS.forEach(c=>{
+  COLORS.forEach(c=>{
 
-const s =
-document.createElement('div');
+    const s =
+      document.createElement('div');
 
-s.className =
-'swatch' +
-(
-c === selectedColor
-? ' selected'
-: ''
-);
+    s.className =
+      'swatch' +
+      (
+        c === selectedColor
+          ? ' selected'
+          : ''
+      );
 
-s.style.background =
-c;
+    s.style.background =
+      c;
 
-s.onclick = ()=>{
+    s.onclick = ()=>{
 
-selectedColor = c;
+      selectedColor = c;
 
-buildSwatches();
+      buildSwatches();
 
-};
+    };
 
-box.appendChild(s);
+    box.appendChild(s);
 
-});
+  });
 
 }
 
@@ -975,93 +957,90 @@ buildSwatches();
 
 function addCard(){
 
-const year =
-document.getElementById(
-'f-year'
-).value.trim();
+  const year =
+    document.getElementById(
+      'f-year'
+    ).value.trim();
 
-const artist =
-document.getElementById(
-'f-artist'
-).value.trim();
+  const artist =
+    document.getElementById(
+      'f-artist'
+    ).value.trim();
 
-const title =
-document.getElementById(
-'f-title'
-).value.trim();
+  const title =
+    document.getElementById(
+      'f-title'
+    ).value.trim();
 
-const youtubeUrl =
-document.getElementById(
-'f-link'
-).value.trim();
+  const youtubeUrl =
+    document.getElementById(
+      'f-link'
+    ).value.trim();
 
-if(
-!year ||
-!artist ||
-!title ||
-!youtubeUrl
-){
+  if(
+    !year ||
+    !artist ||
+    !title ||
+    !youtubeUrl
+  ){
 
-alert(
-'Bitte Jahr, Interpret, Titel und Link ausfüllen.'
-);
+    alert(
+      'Bitte Jahr, Interpret, Titel und Link ausfüllen.'
+    );
 
-return;
+    return;
+  }
 
-}
+  const videoId =
+    extractYouTubeId(
+      youtubeUrl
+    );
 
-const videoId =
-extractYouTubeId(
-youtubeUrl
-);
+  if(!videoId){
 
-if(!videoId){
+    alert(
+      'Konnte keine YouTube-Video-ID in diesem Link finden. ' +
+      'Bitte einen normalen YouTube-Link einfügen.'
+    );
 
-alert(
-'Konnte keine YouTube-Video-ID in diesem Link finden. ' +
-'Bitte einen normalen YouTube-Link einfügen.'
-);
+    return;
+  }
 
-return;
+  const link =
+    buildPlayerLink(
+      year,
+      artist,
+      title,
+      videoId
+    );
 
-}
+  cards.push({
 
-const link =
-buildPlayerLink(
-year,
-artist,
-title,
-videoId
-);
+    year:year,
+    artist:artist,
+    title:title,
+    link:link,
+    color:selectedColor
 
-cards.push({
+  });
 
-year:year,
-artist:artist,
-title:title,
-link:link,
-color:selectedColor
+  document.getElementById(
+    'f-year'
+  ).value = '';
 
-});
+  document.getElementById(
+    'f-artist'
+  ).value = '';
 
-document.getElementById(
-'f-year'
-).value = '';
+  document.getElementById(
+    'f-title'
+  ).value = '';
 
-document.getElementById(
-'f-artist'
-).value = '';
+  document.getElementById(
+    'f-link'
+  ).value = '';
 
-document.getElementById(
-'f-title'
-).value = '';
-
-document.getElementById(
-'f-link'
-).value = '';
-
-renderTable();
-
+  renderTable();
 }
 
 
@@ -1071,10 +1050,9 @@ renderTable();
 
 function removeCard(i){
 
-cards.splice(i,1);
+  cards.splice(i,1);
 
-renderTable();
-
+  renderTable();
 }
 
 
@@ -1084,84 +1062,82 @@ renderTable();
 
 function renderTable(){
 
-const body =
-document.getElementById(
-'cardTableBody'
-);
+  const body =
+    document.getElementById(
+      'cardTableBody'
+    );
 
-const empty =
-document.getElementById(
-'emptyMsg'
-);
+  const empty =
+    document.getElementById(
+      'emptyMsg'
+    );
 
-const table =
-document.getElementById(
-'cardTable'
-);
+  const table =
+    document.getElementById(
+      'cardTable'
+    );
 
-body.innerHTML = '';
+  body.innerHTML = '';
 
-if(cards.length === 0){
+  if(cards.length === 0){
 
-table.style.display =
-'none';
+    table.style.display =
+      'none';
 
-empty.style.display =
-'block';
+    empty.style.display =
+      'block';
 
-return;
+    return;
+  }
 
-}
+  table.style.display =
+    'table';
 
-table.style.display =
-'table';
+  empty.style.display =
+    'none';
 
-empty.style.display =
-'none';
+  cards.forEach((c,i)=>{
 
-cards.forEach((c,i)=>{
+    const tr =
+      document.createElement(
+        'tr'
+      );
 
-const tr =
-document.createElement(
-'tr'
-);
+    tr.innerHTML = `
 
-tr.innerHTML = `
+      <td>${i+1}</td>
 
-<td>${i+1}</td>
+      <td>
 
-<td>
+        <span
+          class="dot"
+          style="background:${c.color}"
+        ></span>
 
-<span
-class="dot"
-style="background:${c.color}"
-></span>
+      </td>
 
-</td>
+      <td>${c.year}</td>
 
-<td>${c.year}</td>
+      <td>${c.artist}</td>
 
-<td>${c.artist}</td>
+      <td>${c.title}</td>
 
-<td>${c.title}</td>
+      <td>
 
-<td>
+        <button
+          class="del"
+          onclick="removeCard(${i})"
+        >
+          Entfernen
+        </button>
 
-<button
-class="del"
-onclick="removeCard(${i})"
->
-Entfernen
-</button>
+      </td>
 
-</td>
+    `;
 
-`;
+    body.appendChild(tr);
 
-body.appendChild(tr);
-
-});
-
+  });
 }
 
 
@@ -1171,44 +1147,43 @@ body.appendChild(tr);
 
 function exportJSON(){
 
-const blob =
-new Blob(
+  const blob =
+    new Blob(
 
-[
-JSON.stringify(
-cards,
-null,
-2
-)
-],
+      [
+        JSON.stringify(
+          cards,
+          null,
+          2
+        )
+      ],
 
-{
-type:'application/json'
-}
+      {
+        type:'application/json'
+      }
 
-);
+    );
 
-const url =
-URL.createObjectURL(
-blob
-);
+  const url =
+    URL.createObjectURL(
+      blob
+    );
 
-const a =
-document.createElement(
-'a'
-);
+  const a =
+    document.createElement(
+      'a'
+    );
 
-a.href = url;
+  a.href = url;
 
-a.download =
-'hitster-karten.json';
+  a.download =
+    'hitster-karten.json';
 
-a.click();
+  a.click();
 
-URL.revokeObjectURL(
-url
-);
-
+  URL.revokeObjectURL(
+    url
+  );
 }
 
 
@@ -1218,48 +1193,47 @@ url
 
 function importJSON(event){
 
-const file =
-event.target.files[0];
+  const file =
+    event.target.files[0];
 
-if(!file){
+  if(!file){
 
-return;
+    return;
+  }
 
-}
+  const reader =
+    new FileReader();
 
-const reader =
-new FileReader();
+  reader.onload = e=>{
 
-reader.onload = e=>{
+    try{
 
-try{
+      const data =
+        JSON.parse(
+          e.target.result
+        );
 
-const data =
-JSON.parse(
-e.target.result
-);
+      if(Array.isArray(data)){
 
-if(Array.isArray(data)){
+        cards = data;
 
-cards = data;
+        renderTable();
 
-renderTable();
+      }
 
-}
+    }catch(err){
 
-}catch(err){
+      alert(
+        'Datei konnte nicht gelesen werden.'
+      );
 
-alert(
-'Datei konnte nicht gelesen werden.'
-);
+    }
 
-}
+  };
 
-};
+  reader.readAsText(file);
 
-reader.readAsText(file);
-
-event.target.value = '';
+  event.target.value = '';
 
 }
 
@@ -1270,37 +1244,35 @@ event.target.value = '';
 
 function getCardPosition(index){
 
-const row =
-Math.floor(
-index / PRINT.columns
-);
+  const row =
+    Math.floor(
+      index / PRINT.columns
+    );
 
-const col =
-index %
-PRINT.columns;
+  const col =
+    index %
+    PRINT.columns;
 
-const left =
-PRINT.left +
-col *
-(
-PRINT.cardWidth +
-PRINT.gapX
-);
+  const left =
+    PRINT.left +
+    col *
+    (
+      PRINT.cardWidth +
+      PRINT.gapX
+    );
 
-const top =
-PRINT.top +
-row *
-(
-PRINT.cardHeight +
-PRINT.gapY
-);
+  const top =
+    PRINT.top +
+    row *
+    (
+      PRINT.cardHeight +
+      PRINT.gapY
+    );
 
-return {
-
-left:left,
-top:top
-
-};
+  return {
+    left:left,
+    top:top
+  };
 
 }
 
@@ -1311,52 +1283,52 @@ top:top
 
 function getBackCardPosition(index){
 
-const row =
-Math.floor(
-index / PRINT.columns
-);
+  const row =
+    Math.floor(
+      index / PRINT.columns
+    );
 
-const col =
-index %
-PRINT.columns;
-
-
-/*
- * Deine Feinjustierung bleibt erhalten.
- */
-
-const BACK_OFFSET_X = 0;
-const BACK_OFFSET_Y = 0;
+  const col =
+    index %
+    PRINT.columns;
 
 
-const left =
-PRINT.left +
-col *
-(
-PRINT.cardWidth +
-PRINT.gapX
-) +
-BACK_OFFSET_X;
+  /*
+   * Aktuelle Feinjustierung.
+   *
+   * Bitte erstmal NICHT verändern.
+   */
+
+  const BACK_OFFSET_X = 0;
+  const BACK_OFFSET_Y = 0;
 
 
-const top =
-PRINT.pageHeight -
-PRINT.top -
-PRINT.cardHeight -
-row *
-(
-PRINT.cardHeight +
-PRINT.gapY
-) +
-BACK_OFFSET_Y;
+  const left =
+    PRINT.left +
+    col *
+    (
+      PRINT.cardWidth +
+      PRINT.gapX
+    ) +
+    BACK_OFFSET_X;
 
 
-return {
+  const top =
+    PRINT.pageHeight -
+    PRINT.top -
+    PRINT.cardHeight -
+    row *
+    (
+      PRINT.cardHeight +
+      PRINT.gapY
+    ) +
+    BACK_OFFSET_Y;
 
-left:left,
-top:top
 
-};
+  return {
+    left:left,
+    top:top
+  };
 
 }
 
@@ -1366,16 +1338,16 @@ top:top
    ============================================================ */
 
 function positionCell(
-cell,
-left,
-top
+  cell,
+  left,
+  top
 ){
 
-cell.style.left =
-left + 'mm';
+  cell.style.left =
+    left + 'mm';
 
-cell.style.top =
-top + 'mm';
+  cell.style.top =
+    top + 'mm';
 
 }
 
@@ -1386,348 +1358,344 @@ top + 'mm';
 
 async function renderPrint(){
 
-const area =
-document.getElementById(
-'printArea'
-);
+  const area =
+    document.getElementById(
+      'printArea'
+    );
 
-area.innerHTML = '';
+  area.innerHTML = '';
 
-if(cards.length === 0){
+  if(cards.length === 0){
 
-return;
+    return;
+  }
 
-}
+  const PER_SHEET = 12;
 
-const PER_SHEET = 12;
+  const sheets =
+    Math.ceil(
+      cards.length /
+      PER_SHEET
+    );
 
-const sheets =
-Math.ceil(
-cards.length /
-PER_SHEET
-);
+  const qrPromises = [];
 
-const qrPromises = [];
 
+  for(
+    let s = 0;
+    s < sheets;
+    s++
+  ){
 
-for(
-let s = 0;
-s < sheets;
-s++
-){
+    const sheetCards =
+      cards.slice(
+        s * PER_SHEET,
+        s * PER_SHEET +
+        PER_SHEET
+      );
 
-const sheetCards =
-cards.slice(
-s * PER_SHEET,
-s * PER_SHEET +
-PER_SHEET
-);
 
+    /* ========================================================
+       VORDERSEITE
+       ======================================================== */
 
-/* ========================================================
-   VORDERSEITE
-   ======================================================== */
+    const frontSheet =
+      document.createElement(
+        'div'
+      );
 
-const frontSheet =
-document.createElement(
-'div'
-);
+    frontSheet.className =
+      'sheet front-sheet';
 
-frontSheet.className =
-'sheet front-sheet';
 
+    for(
+      let i = 0;
+      i < PER_SHEET;
+      i++
+    ){
 
-for(
-let i = 0;
-i < PER_SHEET;
-i++
-){
+      const c =
+        sheetCards[i];
 
-const c =
-sheetCards[i];
+      const cell =
+        document.createElement(
+          'div'
+        );
 
-const cell =
-document.createElement(
-'div'
-);
 
+      const pos =
+        getCardPosition(i);
 
-const pos =
-getCardPosition(i);
+      positionCell(
+        cell,
+        pos.left,
+        pos.top
+      );
 
-positionCell(
-cell,
-pos.left,
-pos.top
-);
 
+      if(!c){
 
-if(!c){
+        cell.className =
+          'cell empty-cell';
 
-cell.className =
-'cell empty-cell';
+        frontSheet.appendChild(
+          cell
+        );
 
-frontSheet.appendChild(
-cell
-);
+        continue;
+      }
 
-continue;
 
-}
+      cell.className =
+        'cell';
 
 
-cell.className =
-'cell';
+      const globalIndex =
+        s * PER_SHEET +
+        i +
+        1;
 
 
-const globalIndex =
-s * PER_SHEET +
-i +
-1;
+      /* ======================================================
+         VORDERSEITE
+         ====================================================== */
 
+      const face =
+        document.createElement(
+          'div'
+        );
 
-/* ========================================================
-   VORDERSEITE
-   ======================================================== */
+      face.className =
+        'front-face';
 
-const face =
-document.createElement(
-'div'
-);
 
-face.className =
-'front-face';
+      /* ======================================================
+         ZAHL
+         ====================================================== */
 
+      const num =
+        document.createElement(
+          'div'
+        );
 
-/* ========================================================
-   ZAHL
-   ======================================================== */
+      num.className =
+        'num';
 
-const num =
-document.createElement(
-'div'
-);
+      num.style.background =
+        c.color;
 
-num.className =
-'num';
+      num.textContent =
+        globalIndex;
 
-num.style.background =
-c.color;
 
-num.textContent =
-globalIndex;
+      /* ======================================================
+         QR-CODE
+         ====================================================== */
 
+      const qrBox =
+        document.createElement(
+          'div'
+        );
 
-/* ========================================================
-   QR-CODE
-   ======================================================== */
+      qrBox.className =
+        'qr';
 
-const qrBox =
-document.createElement(
-'div'
-);
 
-qrBox.className =
-'qr';
+      const canvas =
+        document.createElement(
+          'canvas'
+        );
 
 
-const canvas =
-document.createElement(
-'canvas'
-);
+      qrBox.appendChild(
+        canvas
+      );
 
-qrBox.appendChild(
-canvas
-);
 
+      face.appendChild(
+        qrBox
+      );
 
-face.appendChild(
-qrBox
-);
+      face.appendChild(
+        num
+      );
 
-face.appendChild(
-num
-);
 
+      cell.appendChild(
+        face
+      );
 
-cell.appendChild(
-face
-);
 
+      frontSheet.appendChild(
+        cell
+      );
 
-frontSheet.appendChild(
-cell
-);
 
+      /*
+       * Weißer QR-Code auf schwarzem Hintergrund
+       */
 
-/*
- * QR-Code:
- * weiß auf schwarz
- */
+      qrPromises.push(
 
-qrPromises.push(
+        QRCode.toCanvas(
 
-QRCode.toCanvas(
+          canvas,
 
-canvas,
+          c.link,
 
-c.link,
+          {
+            margin:1,
+            width:400,
+            errorCorrectionLevel:'M',
 
-{
-margin:1,
-width:400,
-errorCorrectionLevel:'M',
+            color:{
+              dark:'#ffffff',
+              light:'#101014'
+            }
+          }
 
-color:{
-dark:'#ffffff',
-light:'#101014'
-}
+        )
 
-}
+      );
 
-)
+    }
 
-);
 
-}
+    area.appendChild(
+      frontSheet
+    );
 
 
-area.appendChild(
-frontSheet
-);
+    /* ========================================================
+       RÜCKSEITE
+       ======================================================== */
 
+    const backSheet =
+      document.createElement(
+        'div'
+      );
 
-/* ========================================================
-   RÜCKSEITE
-   ======================================================== */
+    backSheet.className =
+      'sheet back-sheet';
 
-const backSheet =
-document.createElement(
-'div'
-);
 
-backSheet.className =
-'sheet back-sheet';
+    for(
+      let i = 0;
+      i < PER_SHEET;
+      i++
+    ){
 
+      const c =
+        sheetCards[i];
 
-for(
-let i = 0;
-i < PER_SHEET;
-i++
-){
 
-const c =
-sheetCards[i];
+      const pos =
+        getBackCardPosition(i);
 
 
-const pos =
-getBackCardPosition(i);
+      const cell =
+        document.createElement(
+          'div'
+        );
 
 
-const cell =
-document.createElement(
-'div'
-);
+      positionCell(
+        cell,
+        pos.left,
+        pos.top
+      );
 
 
-positionCell(
-cell,
-pos.left,
-pos.top
-);
+      if(!c){
 
+        cell.className =
+          'cell empty-cell';
 
-if(!c){
+        backSheet.appendChild(
+          cell
+        );
 
-cell.className =
-'cell empty-cell';
+        continue;
+      }
 
-backSheet.appendChild(
-cell
-);
 
-continue;
+      cell.className =
+        'cell';
 
-}
 
+      const globalIndex =
+        s * PER_SHEET +
+        i +
+        1;
 
-cell.className =
-'cell';
 
+      /* ======================================================
+         RÜCKSEITE
+         ====================================================== */
 
-const globalIndex =
-s * PER_SHEET +
-i +
-1;
+      const face =
+        document.createElement(
+          'div'
+        );
 
+      face.className =
+        'back-face';
 
-/* ========================================================
-   RÜCKSEITE
-   ======================================================== */
 
-const face =
-document.createElement(
-'div'
-);
+      face.style.background =
+        lightenColor(
+          c.color,
+          0.6
+        );
 
-face.className =
-'back-face';
 
+      face.innerHTML = `
 
-face.style.background =
-lightenColor(
-c.color,
-0.6
-);
+        <div class="artist">
+          ${c.artist}
+        </div>
 
+        <div class="year">
+          ${c.year}
+        </div>
 
-face.innerHTML = `
+        <div class="title">
+          ${c.title}
+        </div>
 
-<div class="artist">
-${c.artist}
-</div>
+        <div class="idx">
+          #${globalIndex}
+        </div>
 
-<div class="year">
-${c.year}
-</div>
+      `;
 
-<div class="title">
-${c.title}
-</div>
 
-<div class="idx">
-#${globalIndex}
-</div>
+      cell.appendChild(
+        face
+      );
 
-`;
 
+      backSheet.appendChild(
+        cell
+      );
 
-cell.appendChild(
-face
-);
+    }
 
 
-backSheet.appendChild(
-cell
-);
+    area.appendChild(
+      backSheet
+    );
 
-}
+  }
 
 
-area.appendChild(
-backSheet
-);
+  /*
+   * Warten bis alle QR-Codes fertig sind.
+   */
 
-}
-
-
-/*
- * QR-Codes fertig laden
- */
-
-await Promise.all(
-qrPromises
-);
+  await Promise.all(
+    qrPromises
+  );
 
 }
 
@@ -1738,50 +1706,48 @@ qrPromises
 
 function printCards(){
 
-if(cards.length === 0){
+  if(cards.length === 0){
 
-alert(
-'Bitte zuerst mindestens eine Karte hinzufügen.'
-);
+    alert(
+      'Bitte zuerst mindestens eine Karte hinzufügen.'
+    );
 
-return;
-
-}
-
-
-if(
-typeof QRCode ===
-'undefined'
-){
-
-alert(
-'Die QR-Code-Bibliothek konnte nicht geladen werden. ' +
-'Bitte Internetverbindung prüfen und die Seite neu laden.'
-);
-
-return;
-
-}
+    return;
+  }
 
 
-renderPrint()
+  if(
+    typeof QRCode ===
+    'undefined'
+  ){
 
-.then(()=>{
+    alert(
+      'Die QR-Code-Bibliothek konnte nicht geladen werden. ' +
+      'Bitte Internetverbindung prüfen und die Seite neu laden.'
+    );
 
-window.print();
+    return;
+  }
 
-})
 
-.catch(err=>{
+  renderPrint()
 
-console.error(err);
+    .then(()=>{
 
-alert(
-'Beim Erzeugen der QR-Codes ist ein Fehler aufgetreten: ' +
-err.message
-);
+      window.print();
 
-});
+    })
+
+    .catch(err=>{
+
+      console.error(err);
+
+      alert(
+        'Beim Erzeugen der QR-Codes ist ein Fehler aufgetreten: ' +
+        err.message
+      );
+
+    });
 
 }
 
