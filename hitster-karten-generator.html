@@ -29,7 +29,6 @@
     color:var(--ink);
   }
 
-
   /* ==========================================================
      OBERFLÄCHE
      ========================================================== */
@@ -220,7 +219,6 @@
     line-height:1.5;
   }
 
-
   /* ==========================================================
      DRUCKBEREICH
      ========================================================== */
@@ -229,40 +227,26 @@
     display:none;
   }
 
-
   /*
-   * ============================================================
-   * A4 DRUCKBLATT
-   * ============================================================
-   *
-   * NICHT mit CSS Grid positionieren.
-   *
-   * Wir verwenden ausschließlich absolute mm-Koordinaten.
-   *
    * A4:
    * 210 x 297 mm
    *
-   * Karten:
+   * Karte:
    * 65 x 65 mm
    *
    * Abstand:
    * 3 mm
    *
-   * Gesamtbreite:
+   * 3 Karten nebeneinander:
    *
    * 65 + 3 + 65 + 3 + 65 = 201 mm
    *
-   * Rest:
-   *
    * 210 - 201 = 9 mm
    *
-   * links/rechts:
-   *
-   * 4.5 mm
+   * links/rechts = 4.5 mm
    */
 
   .sheet{
-
     position:relative;
 
     width:210mm;
@@ -275,21 +259,14 @@
 
     overflow:hidden;
 
-    /*
-     * Kein Grid.
-     * Keine Transformation.
-     * Keine automatische Positionierung.
-     */
     display:block;
   }
-
 
   /* ==========================================================
      KARTE
      ========================================================== */
 
   .cell{
-
     position:absolute;
 
     width:65mm;
@@ -302,9 +279,6 @@
 
     overflow:hidden;
 
-    /*
-     * Wichtig für exakte Maße.
-     */
     box-sizing:border-box;
   }
 
@@ -312,13 +286,11 @@
     border:none;
   }
 
-
   /* ==========================================================
      VORDERSEITE
      ========================================================== */
 
   .front-face{
-
     position:absolute;
 
     left:0;
@@ -346,9 +318,7 @@
     color-adjust:exact;
   }
 
-
   .front-face .qr{
-
     width:25mm;
     height:25mm;
 
@@ -359,19 +329,15 @@
     line-height:0;
   }
 
-
   .front-face .qr img,
   .front-face .qr canvas{
-
     width:25mm !important;
     height:25mm !important;
 
     display:block;
   }
 
-
   .front-face .num{
-
     position:absolute;
 
     top:2.5mm;
@@ -403,13 +369,11 @@
     color-adjust:exact;
   }
 
-
   /* ==========================================================
      RÜCKSEITE
      ========================================================== */
 
   .back-face{
-
     position:absolute;
 
     left:0;
@@ -431,14 +395,24 @@
 
     overflow:hidden;
 
+    /*
+     * WICHTIG:
+     *
+     * Der Drucker wird auf
+     * "an kurzer Seite wenden"
+     * gestellt.
+     *
+     * Deshalb wird die Rückseite innerhalb
+     * ihrer Karte um 180° gedreht.
+     */
+    transform:rotate(180deg);
+
     -webkit-print-color-adjust:exact;
     print-color-adjust:exact;
     color-adjust:exact;
   }
 
-
   .back-face .artist{
-
     font-size:4mm;
 
     font-weight:600;
@@ -448,9 +422,7 @@
     color:var(--ink);
   }
 
-
   .back-face .year{
-
     font-size:14mm;
 
     font-weight:800;
@@ -465,9 +437,7 @@
     line-height:1;
   }
 
-
   .back-face .title{
-
     font-size:4mm;
 
     font-style:italic;
@@ -477,9 +447,7 @@
     opacity:0.9;
   }
 
-
   .back-face .idx{
-
     position:absolute;
 
     bottom:2.5mm;
@@ -492,24 +460,19 @@
     font-family:Arial,sans-serif;
   }
 
-
   /* ==========================================================
      DRUCK
      ========================================================== */
 
   @page{
-
     size:A4 portrait;
-
     margin:0;
   }
-
 
   @media print{
 
     html,
     body{
-
       width:210mm;
 
       margin:0;
@@ -518,16 +481,12 @@
       background:#fff;
     }
 
-
     header,
     .wrap > *:not(#printArea){
-
       display:none !important;
     }
 
-
     #printArea{
-
       display:block;
 
       width:210mm;
@@ -536,9 +495,7 @@
       padding:0;
     }
 
-
     .sheet{
-
       width:210mm;
       height:297mm;
 
@@ -551,30 +508,23 @@
       overflow:hidden;
     }
 
-
     .sheet:last-child{
-
       page-break-after:auto;
       break-after:auto;
     }
 
-
     .cell{
-
       position:absolute;
 
       width:65mm;
       height:65mm;
     }
-
   }
 
 </style>
 </head>
 
-
 <body>
-
 
 <header>
 
@@ -588,9 +538,7 @@
 
 </header>
 
-
 <div class="wrap">
-
 
   <!-- ========================================================
        FORMULAR
@@ -600,9 +548,7 @@
 
     <h2>Neue Karte</h2>
 
-
     <div class="grid-form">
-
 
       <div>
 
@@ -616,7 +562,6 @@
 
       </div>
 
-
       <div>
 
         <label>Interpret</label>
@@ -629,7 +574,6 @@
 
       </div>
 
-
       <div>
 
         <label>Kategorie-Farbe</label>
@@ -640,7 +584,6 @@
         ></div>
 
       </div>
-
 
       <div>
 
@@ -654,9 +597,7 @@
 
       </div>
 
-
     </div>
-
 
     <div
       class="grid-form"
@@ -677,14 +618,12 @@
 
     </div>
 
-
     <button
       class="add-btn"
       onclick="addCard();"
     >
       + Karte hinzufügen
     </button>
-
 
     <div class="hint">
 
@@ -697,7 +636,6 @@
 
   </div>
 
-
   <!-- ========================================================
        WERKZEUGLEISTE
        ======================================================== -->
@@ -708,14 +646,12 @@
       🖨 Karten drucken / als PDF speichern
     </button>
 
-
     <button
       class="secondary"
       onclick="exportJSON();"
     >
       ⬇ Liste exportieren
     </button>
-
 
     <label class="file-btn secondary">
 
@@ -730,7 +666,6 @@
     </label>
 
   </div>
-
 
   <!-- ========================================================
        TABELLE
@@ -756,11 +691,9 @@
 
     </thead>
 
-
     <tbody id="cardTableBody"></tbody>
 
   </table>
-
 
   <div
     class="empty"
@@ -769,19 +702,15 @@
     Noch keine Karten angelegt.
   </div>
 
-
   <!-- ========================================================
        DRUCKBEREICH
        ======================================================== -->
 
   <div id="printArea"></div>
 
-
 </div>
 
-
 <script>
-
 
 /* ============================================================
    GRUNDDATEN
@@ -800,18 +729,14 @@ const COLORS = [
 
 ];
 
-
 const PLAYER_BASE =
   'https://fushima123-wq.github.io/soundclip-30/player.html';
-
 
 document.getElementById(
   'playerBaseDisplay'
 ).textContent = PLAYER_BASE;
 
-
 let cards = [];
-
 
 let selectedColor =
   COLORS[0];
@@ -841,11 +766,13 @@ const PRINT = {
 
 
 /*
- * Automatisch berechneter linker Rand.
+ * Gesamtbreite:
  *
  * 65 + 3 + 65 + 3 + 65 = 201 mm
  *
  * 210 - 201 = 9 mm
+ *
+ * links/rechts:
  *
  * 9 / 2 = 4.5 mm
  */
@@ -878,7 +805,6 @@ function extractYouTubeId(url){
 
   ];
 
-
   for(const p of patterns){
 
     const m = url.match(p);
@@ -890,7 +816,6 @@ function extractYouTubeId(url){
     }
 
   }
-
 
   return null;
 }
@@ -905,13 +830,11 @@ function lightenColor(hex,percent){
   hex =
     hex.replace('#','');
 
-
   const r =
     parseInt(
       hex.substring(0,2),
       16
     );
-
 
   const g =
     parseInt(
@@ -919,31 +842,26 @@ function lightenColor(hex,percent){
       16
     );
 
-
   const b =
     parseInt(
       hex.substring(4,6),
       16
     );
 
-
   const nr =
     Math.round(
       r + (255-r)*percent
     );
-
 
   const ng =
     Math.round(
       g + (255-g)*percent
     );
 
-
   const nb =
     Math.round(
       b + (255-b)*percent
     );
-
 
   return `rgb(${nr},${ng},${nb})`;
 }
@@ -970,7 +888,6 @@ function buildPlayerLink(
 
     });
 
-
   return (
     PLAYER_BASE +
     '?' +
@@ -990,15 +907,12 @@ function buildSwatches(){
       'swatches'
     );
 
-
   box.innerHTML = '';
-
 
   COLORS.forEach(c=>{
 
     const s =
       document.createElement('div');
-
 
     s.className =
       'swatch' +
@@ -1008,10 +922,8 @@ function buildSwatches(){
           : ''
       );
 
-
     s.style.background =
       c;
-
 
     s.onclick = ()=>{
 
@@ -1021,13 +933,11 @@ function buildSwatches(){
 
     };
 
-
     box.appendChild(s);
 
   });
 
 }
-
 
 buildSwatches();
 
@@ -1043,24 +953,20 @@ function addCard(){
       'f-year'
     ).value.trim();
 
-
   const artist =
     document.getElementById(
       'f-artist'
     ).value.trim();
-
 
   const title =
     document.getElementById(
       'f-title'
     ).value.trim();
 
-
   const youtubeUrl =
     document.getElementById(
       'f-link'
     ).value.trim();
-
 
   if(
     !year ||
@@ -1076,12 +982,10 @@ function addCard(){
     return;
   }
 
-
   const videoId =
     extractYouTubeId(
       youtubeUrl
     );
-
 
   if(!videoId){
 
@@ -1093,7 +997,6 @@ function addCard(){
     return;
   }
 
-
   const link =
     buildPlayerLink(
       year,
@@ -1101,7 +1004,6 @@ function addCard(){
       title,
       videoId
     );
-
 
   cards.push({
 
@@ -1113,26 +1015,21 @@ function addCard(){
 
   });
 
-
   document.getElementById(
     'f-year'
   ).value = '';
-
 
   document.getElementById(
     'f-artist'
   ).value = '';
 
-
   document.getElementById(
     'f-title'
   ).value = '';
 
-
   document.getElementById(
     'f-link'
   ).value = '';
-
 
   renderTable();
 }
@@ -1162,21 +1059,17 @@ function renderTable(){
       'cardTableBody'
     );
 
-
   const empty =
     document.getElementById(
       'emptyMsg'
     );
-
 
   const table =
     document.getElementById(
       'cardTable'
     );
 
-
   body.innerHTML = '';
-
 
   if(cards.length === 0){
 
@@ -1189,14 +1082,11 @@ function renderTable(){
     return;
   }
 
-
   table.style.display =
     'table';
 
-
   empty.style.display =
     'none';
-
 
   cards.forEach((c,i)=>{
 
@@ -1204,7 +1094,6 @@ function renderTable(){
       document.createElement(
         'tr'
       );
-
 
     tr.innerHTML = `
 
@@ -1236,7 +1125,6 @@ function renderTable(){
 
     `;
 
-
     body.appendChild(tr);
 
   });
@@ -1267,28 +1155,22 @@ function exportJSON(){
 
     );
 
-
   const url =
     URL.createObjectURL(
       blob
     );
-
 
   const a =
     document.createElement(
       'a'
     );
 
-
   a.href = url;
-
 
   a.download =
     'hitster-karten.json';
 
-
   a.click();
-
 
   URL.revokeObjectURL(
     url
@@ -1306,16 +1188,13 @@ function importJSON(event){
   const file =
     event.target.files[0];
 
-
   if(!file){
 
     return;
   }
 
-
   const reader =
     new FileReader();
-
 
   reader.onload = e=>{
 
@@ -1325,7 +1204,6 @@ function importJSON(event){
         JSON.parse(
           e.target.result
         );
-
 
       if(Array.isArray(data)){
 
@@ -1345,9 +1223,7 @@ function importJSON(event){
 
   };
 
-
   reader.readAsText(file);
-
 
   event.target.value = '';
 
@@ -1355,7 +1231,7 @@ function importJSON(event){
 
 
 /* ============================================================
-   POSITION EINER KARTE
+   VORDERSEITEN-POSITION
    ============================================================ */
 
 function getCardPosition(index){
@@ -1365,10 +1241,9 @@ function getCardPosition(index){
       index / PRINT.columns
     );
 
-
   const col =
-    index % PRINT.columns;
-
+    index %
+    PRINT.columns;
 
   const left =
     PRINT.left +
@@ -1378,7 +1253,6 @@ function getCardPosition(index){
       PRINT.gapX
     );
 
-
   const top =
     PRINT.top +
     row *
@@ -1386,7 +1260,6 @@ function getCardPosition(index){
       PRINT.cardHeight +
       PRINT.gapY
     );
-
 
   return {
     left:left,
@@ -1401,19 +1274,38 @@ function getCardPosition(index){
    ============================================================ */
 
 /*
- * Für Duplex:
+ * ============================================================
+ *
+ * WICHTIG:
+ *
+ * Der Drucker wird auf:
+ *
+ *     "AN KURZER SEITE WENDEN"
+ *
+ * gestellt.
+ *
+ * Deshalb wird die Rückseite NICHT links/rechts gespiegelt.
+ *
+ * Stattdessen wird sie oben/unten gespiegelt.
  *
  * Vorderseite:
  *
- *  1   2   3
+ *     1   2   3
+ *     4   5   6
+ *     7   8   9
+ *    10  11  12
  *
  * Rückseite:
  *
- *  3   2   1
+ *    10  11  12
+ *     7   8   9
+ *     4   5   6
+ *     1   2   3
  *
- * Deshalb wird die X-Position gespiegelt.
+ * Dadurch liegt Karte 1 nach dem Wenden
+ * exakt hinter Karte 1.
  *
- * Die Y-Position bleibt identisch.
+ * ============================================================
  */
 
 function getBackCardPosition(index){
@@ -1423,34 +1315,42 @@ function getBackCardPosition(index){
       index / PRINT.columns
     );
 
-
   const col =
-    index % PRINT.columns;
+    index %
+    PRINT.columns;
 
+  /*
+   * Y-Achse spiegeln
+   */
 
-  const mirroredCol =
-    PRINT.columns -
+  const mirroredRow =
+    PRINT.rows -
     1 -
-    col;
+    row;
 
+  /*
+   * X bleibt identisch
+   */
 
   const left =
     PRINT.left +
-    mirroredCol *
+    col *
     (
       PRINT.cardWidth +
       PRINT.gapX
     );
 
+  /*
+   * Gespiegelte Y-Position
+   */
 
   const top =
     PRINT.top +
-    row *
+    mirroredRow *
     (
       PRINT.cardHeight +
       PRINT.gapY
     );
-
 
   return {
     left:left,
@@ -1473,7 +1373,6 @@ function positionCell(
   cell.style.left =
     left + 'mm';
 
-
   cell.style.top =
     top + 'mm';
 
@@ -1491,25 +1390,20 @@ async function renderPrint(){
       'printArea'
     );
 
-
   area.innerHTML = '';
-
 
   if(cards.length === 0){
 
     return;
   }
 
-
   const PER_SHEET = 12;
-
 
   const sheets =
     Math.ceil(
       cards.length /
       PER_SHEET
     );
-
 
   const qrPromises = [];
 
@@ -1541,13 +1435,12 @@ async function renderPrint(){
         'div'
       );
 
-
     frontSheet.className =
       'sheet front-sheet';
 
 
     /*
-     * Immer 12 Positionen erzeugen.
+     * Alle 12 physischen Positionen
      */
 
     for(
@@ -1559,7 +1452,6 @@ async function renderPrint(){
       const c =
         sheetCards[i];
 
-
       const cell =
         document.createElement(
           'div'
@@ -1567,12 +1459,11 @@ async function renderPrint(){
 
 
       /*
-       * Exakte Position
+       * Exakte Vorderseitenposition
        */
 
       const pos =
         getCardPosition(i);
-
 
       positionCell(
         cell,
@@ -1590,11 +1481,9 @@ async function renderPrint(){
         cell.className =
           'cell empty-cell';
 
-
         frontSheet.appendChild(
           cell
         );
-
 
         continue;
       }
@@ -1603,10 +1492,6 @@ async function renderPrint(){
       cell.className =
         'cell';
 
-
-      /*
-       * Globale Kartennummer
-       */
 
       const globalIndex =
         s * PER_SHEET +
@@ -1623,13 +1508,12 @@ async function renderPrint(){
           'div'
         );
 
-
       face.className =
         'front-face';
 
 
       /*
-       * Nummer
+       * Kartennummer
        */
 
       const num =
@@ -1637,14 +1521,11 @@ async function renderPrint(){
           'div'
         );
 
-
       num.className =
         'num';
 
-
       num.style.background =
         c.color;
-
 
       num.textContent =
         globalIndex;
@@ -1658,7 +1539,6 @@ async function renderPrint(){
         document.createElement(
           'div'
         );
-
 
       qrBox.className =
         'qr';
@@ -1678,7 +1558,6 @@ async function renderPrint(){
       face.appendChild(
         qrBox
       );
-
 
       face.appendChild(
         num
@@ -1734,16 +1613,16 @@ async function renderPrint(){
         'div'
       );
 
-
     backSheet.className =
       'sheet back-sheet';
 
 
     /*
-     * Auch die Rückseite besitzt dieselben 12 physischen
-     * Kartenpositionen.
+     * Rückseite:
      *
-     * Nur die X-Koordinate wird gespiegelt.
+     * Y wird gespiegelt.
+     *
+     * X bleibt gleich.
      */
 
     for(
@@ -1757,7 +1636,7 @@ async function renderPrint(){
 
 
       /*
-       * Rückseite exakt gegenüber der Vorderseite.
+       * Exakte Rückseitenposition
        */
 
       const pos =
@@ -1786,11 +1665,9 @@ async function renderPrint(){
         cell.className =
           'cell empty-cell';
 
-
         backSheet.appendChild(
           cell
         );
-
 
         continue;
       }
@@ -1799,10 +1676,6 @@ async function renderPrint(){
       cell.className =
         'cell';
 
-
-      /*
-       * Karten-ID
-       */
 
       const globalIndex =
         s * PER_SHEET +
@@ -1818,7 +1691,6 @@ async function renderPrint(){
         document.createElement(
           'div'
         );
-
 
       face.className =
         'back-face';
@@ -1923,7 +1795,6 @@ function printCards(){
     .catch(err=>{
 
       console.error(err);
-
 
       alert(
         'Beim Erzeugen der QR-Codes ist ein Fehler aufgetreten: ' +
