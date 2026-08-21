@@ -29,10 +29,6 @@ body{
   color:var(--ink);
 }
 
-/* ==========================================================
-   OBERFLÄCHE
-   ========================================================== */
-
 header{
   background:var(--panel);
   color:var(--paper);
@@ -300,14 +296,6 @@ table.list .del{
   color-adjust:exact;
 }
 
-/*
- * Schwarzer Bereich:
- * 1 mm Überstand rundherum.
- *
- * Die eigentliche Karte bleibt 69 x 69 mm.
- * Nur der schwarze Hintergrund ist etwas größer.
- */
-
 .front-face::before{
   content:"";
 
@@ -476,10 +464,6 @@ table.list .del{
     background:#fff;
   }
 
-  /* WICHTIG: .wrap hat auf dem Bildschirm eigenes Padding/max-width
-     für die Formular-Ansicht - das muss beim Drucken auf 0/none,
-     sonst schiebt es die 210mm breite Druckseite nach rechts raus
-     und der rechte Rand wird schmaler als der linke. */
   .wrap{
     max-width:none;
     margin:0;
@@ -554,6 +538,31 @@ als Karten ausdrucken
 <div class="card-form">
 
 <h2>Neue Karte</h2>
+
+<!-- ========================================================
+     STARTNUMMER
+     ======================================================== -->
+
+<div style="margin-bottom:12px;">
+
+<label style="display:block;font-size:11px;text-transform:uppercase;letter-spacing:0.04em;color:#777;margin-bottom:4px;">
+Startnummer
+</label>
+
+<input
+type="number"
+id="f-start-number"
+value="1"
+min="1"
+step="1"
+style="width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:6px;font-size:14px;"
+>
+
+<div class="hint">
+Beispiel: Startnummer 13 → die Karten werden beim Drucken mit #13 bis #24 nummeriert.
+</div>
+
+</div>
 
 <div class="grid-form">
 
@@ -763,13 +772,12 @@ const PRINT = {
   cardWidth:65,
   cardHeight:65,
 
-  /* Abstand zwischen den Karten - Rand wurde verkleinert,
-     damit hier mehr Platz für den Überstand der Vorderseite ist */
+  /* Abstand zwischen den Karten */
 
   gapX:5,
   gapY:8,
 
-  /* Abstand oben/unten (rechnerisch symmetrisch bei 4 Reihen) */
+  /* Abstand oben/unten */
 
   top:6.5,
 
@@ -1283,7 +1291,6 @@ function getBackCardPosition(index){
     index %
     PRINT.columns;
 
-
   /*
    * Aktuelle Feinjustierung.
    *
@@ -1293,7 +1300,6 @@ function getBackCardPosition(index){
   const BACK_OFFSET_X = 0;
   const BACK_OFFSET_Y = 0;
 
-
   const left =
     PRINT.left +
     col *
@@ -1302,7 +1308,6 @@ function getBackCardPosition(index){
       PRINT.gapX
     ) +
     BACK_OFFSET_X;
-
 
   const top =
     PRINT.pageHeight -
@@ -1314,7 +1319,6 @@ function getBackCardPosition(index){
       PRINT.gapY
     ) +
     BACK_OFFSET_Y;
-
 
   return {
     left:left,
@@ -1369,6 +1373,20 @@ async function renderPrint(){
       PER_SHEET
     );
 
+  /*
+   * STARTNUMMER EINLESEN
+   *
+   * Standard ist 1.
+   */
+
+  const startNumber =
+    parseInt(
+      document.getElementById(
+        'f-start-number'
+      ).value,
+      10
+    ) || 1;
+
   const qrPromises = [];
 
 
@@ -1413,7 +1431,6 @@ async function renderPrint(){
           'div'
         );
 
-
       const pos =
         getCardPosition(i);
 
@@ -1441,10 +1458,14 @@ async function renderPrint(){
         'cell';
 
 
+      /*
+       * HIER WIRD DIE STARTNUMMER BERÜCKSICHTIGT
+       */
+
       const globalIndex =
+        startNumber +
         s * PER_SHEET +
-        i +
-        1;
+        i;
 
 
       /* ======================================================
@@ -1493,7 +1514,6 @@ async function renderPrint(){
         document.createElement(
           'canvas'
         );
-
 
       qrBox.appendChild(
         canvas
@@ -1611,10 +1631,14 @@ async function renderPrint(){
         'cell';
 
 
+      /*
+       * GLEICHE STARTNUMMER WIE AUF DER VORDERSEITE
+       */
+
       const globalIndex =
+        startNumber +
         s * PER_SHEET +
-        i +
-        1;
+        i;
 
 
       /* ======================================================
