@@ -29,6 +29,10 @@ body{
   color:var(--ink);
 }
 
+/* ==========================================================
+   OBERFLÄCHE
+   ========================================================== */
+
 header{
   background:var(--panel);
   color:var(--paper);
@@ -546,7 +550,7 @@ als Karten ausdrucken
 <div style="margin-bottom:12px;">
 
 <label style="display:block;font-size:11px;text-transform:uppercase;letter-spacing:0.04em;color:#777;margin-bottom:4px;">
-Startnummer
+Startnummer für neue Karten
 </label>
 
 <input
@@ -559,7 +563,7 @@ style="width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:6p
 >
 
 <div class="hint">
-Beispiel: Startnummer 13 → die Karten werden beim Drucken mit #13 bis #24 nummeriert.
+Die erste neue Karte bekommt diese Nummer. Danach wird automatisch hochgezählt.
 </div>
 
 </div>
@@ -976,6 +980,32 @@ function addCard(){
       'f-link'
     ).value.trim();
 
+  /*
+   * Startnummer auslesen
+   */
+
+  const startNumberInput =
+    document.getElementById(
+      'f-start-number'
+    );
+
+  let startNumber =
+    parseInt(
+      startNumberInput.value,
+      10
+    );
+
+  if(
+    !Number.isInteger(startNumber) ||
+    startNumber < 1
+  ){
+
+    startNumber = 1;
+
+    startNumberInput.value = 1;
+
+  }
+
   if(
     !year ||
     !artist ||
@@ -1013,7 +1043,13 @@ function addCard(){
       videoId
     );
 
+  /*
+   * Nummer direkt in der Karte speichern
+   */
+
   cards.push({
+
+    number:startNumber,
 
     year:year,
     artist:artist,
@@ -1022,6 +1058,13 @@ function addCard(){
     color:selectedColor
 
   });
+
+  /*
+   * Automatisch auf die nächste Nummer erhöhen
+   */
+
+  startNumberInput.value =
+    startNumber + 1;
 
   document.getElementById(
     'f-year'
@@ -1097,6 +1140,16 @@ function renderTable(){
 
   cards.forEach((c,i)=>{
 
+    /*
+     * Für ältere/importierte Karten ohne gespeicherte Nummer
+     * wird automatisch eine Nummer erzeugt.
+     */
+
+    const number =
+      Number.isInteger(c.number)
+        ? c.number
+        : i + 1;
+
     const tr =
       document.createElement(
         'tr'
@@ -1104,7 +1157,7 @@ function renderTable(){
 
     tr.innerHTML = `
 
-      <td>${i+1}</td>
+      <td>${number}</td>
 
       <td>
 
@@ -1214,7 +1267,42 @@ function importJSON(event){
 
       if(Array.isArray(data)){
 
-        cards = data;
+        /*
+         * Alte Dateien ohne Nummer bekommen automatisch
+         * eine fortlaufende Nummer.
+         */
+
+        cards =
+          data.map((c,i)=>({
+
+            ...c,
+
+            number:
+              Number.isInteger(c.number)
+                ? c.number
+                : i + 1
+
+          }));
+
+        /*
+         * Startnummer automatisch auf die nächste freie Nummer
+         */
+
+        if(cards.length > 0){
+
+          const maxNumber =
+            Math.max(
+              ...cards.map(
+                c => Number(c.number) || 0
+              )
+            );
+
+          document.getElementById(
+            'f-start-number'
+          ).value =
+            maxNumber + 1;
+
+        }
 
         renderTable();
 
@@ -1373,20 +1461,6 @@ async function renderPrint(){
       PER_SHEET
     );
 
-  /*
-   * STARTNUMMER EINLESEN
-   *
-   * Standard ist 1.
-   */
-
-  const startNumber =
-    parseInt(
-      document.getElementById(
-        'f-start-number'
-      ).value,
-      10
-    ) || 1;
-
   const qrPromises = [];
 
 
@@ -1459,13 +1533,16 @@ async function renderPrint(){
 
 
       /*
-       * HIER WIRD DIE STARTNUMMER BERÜCKSICHTIGT
+       * Nummer aus der gespeicherten Karte nehmen.
+       *
+       * Falls eine alte Karte keine Nummer besitzt,
+       * wird automatisch eine Nummer vergeben.
        */
 
       const globalIndex =
-        startNumber +
-        s * PER_SHEET +
-        i;
+        Number.isInteger(c.number)
+          ? c.number
+          : s * PER_SHEET + i + 1;
 
 
       /* ======================================================
@@ -1632,13 +1709,14 @@ async function renderPrint(){
 
 
       /*
-       * GLEICHE STARTNUMMER WIE AUF DER VORDERSEITE
+       * DIE GLEICHE GESPEICHERTE NUMMER
+       * WIE AUF DER VORDERSEITE
        */
 
       const globalIndex =
-        startNumber +
-        s * PER_SHEET +
-        i;
+        Number.isInteger(c.number)
+          ? c.number
+          : s * PER_SHEET + i + 1;
 
 
       /* ======================================================
